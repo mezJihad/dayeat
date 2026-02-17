@@ -1,4 +1,5 @@
 import { getTodayMenus } from './actions'
+import { FilterBar } from '@/components/FilterBar'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { MessageCircle, Store, Tag } from 'lucide-react'
@@ -6,8 +7,17 @@ import { MessageCircle, Store, Tag } from 'lucide-react'
 // Placeholder image if no photo provided
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800"
 
-export default async function Home() {
-  const menus = await getTodayMenus()
+interface HomeProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const resolvedParams = await searchParams
+  const category = resolvedParams.category as string
+  const lat = resolvedParams.lat ? parseFloat(resolvedParams.lat as string) : undefined
+  const long = resolvedParams.long ? parseFloat(resolvedParams.long as string) : undefined
+
+  const menus = await getTodayMenus({ category, lat, long })
 
   return (
     <div className="container mx-auto p-4 max-w-2xl">
@@ -17,6 +27,8 @@ export default async function Home() {
           <p className="text-muted-foreground text-sm">Les meilleurs menus du jour autour de vous</p>
         </div>
       </header>
+
+      <FilterBar />
 
       {menus.length === 0 ? (
         <div className="text-center py-20 text-muted-foreground">

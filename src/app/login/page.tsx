@@ -21,8 +21,8 @@ export default function LoginPage() {
             const result = await action(formData)
             if (result?.error) {
                 setError(result.error)
-            } else if (result?.message) {
-                setMessage(result.message)
+            } else if ((result as any)?.message) {
+                setMessage((result as any).message)
             }
         })
     }

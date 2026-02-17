@@ -58,7 +58,7 @@ export function MenuCard({ item }: MenuCardProps) {
                 </div>
             </CardContent>
             <CardFooter className="p-4 pt-0 bg-muted/50 p-3 mt-auto">
-                <Button asChild className="w-full gap-2" size="sm" disabled={item.is_sold_out}>
+                <Button asChild className="w-full gap-2" size="sm" disabled={item.is_sold_out || false}>
                     <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-4 w-4" />
                         Commander sur WhatsApp
