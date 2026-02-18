@@ -98,7 +98,7 @@ export default async function AdminPage() {
         <div className="container mx-auto p-4 max-w-md pb-24">
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold">Espace Pro 👨‍🍳</h1>
+                    <h1 className="text-2xl font-bold">Mon Restaurant 👨‍🍳</h1>
                     <p className="text-sm text-muted-foreground">
                         Restaurant: <span className="font-semibold text-foreground">{restaurant.name}</span>
                     </p>

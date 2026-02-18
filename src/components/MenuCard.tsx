@@ -1,8 +1,9 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Database } from "@/types"
-import { ExternalLink, MapPin } from "lucide-react"
+import { ExternalLink, MapPin, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useFavorites } from "@/hooks/useFavorites"
 
 type MenuItem = Database['public']['Functions']['get_menus_around']['Returns'][number]
 
@@ -11,6 +12,8 @@ interface MenuCardProps {
 }
 
 export function MenuCard({ item }: MenuCardProps) {
+    const { isFavorite, toggleFavorite } = useFavorites()
+    const isFav = isFavorite(item.restaurant_id)
     const whatsappMessage = `Bonjour, je souhaite commander : ${item.title} du menu du jour.`
     const whatsappUrl = `https://wa.me/${item.restaurant_phone}?text=${encodeURIComponent(whatsappMessage)}`
 
@@ -34,11 +37,24 @@ export function MenuCard({ item }: MenuCardProps) {
                         <CardTitle className="line-clamp-1">{item.title}</CardTitle>
                         <CardDescription className="line-clamp-2 text-sm">{item.description}</CardDescription>
                     </div>
-                    {!item.photo_url && (
-                        <Badge variant={item.is_sold_out ? "destructive" : "secondary"}>
-                            {item.is_sold_out ? "Épuisé" : `${item.price} MAD`}
-                        </Badge>
-                    )}
+                    <div className="flex flex-col gap-2 items-end">
+                        {!item.photo_url && (
+                            <Badge variant={item.is_sold_out ? "destructive" : "secondary"}>
+                                {item.is_sold_out ? "Épuisé" : `${item.price} MAD`}
+                            </Badge>
+                        )}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-red-500"
+                            onClick={(e) => {
+                                e.preventDefault()
+                                toggleFavorite(item.restaurant_id)
+                            }}
+                        >
+                            <Heart className={`h-5 w-5 ${isFav ? "fill-red-500 text-red-500" : ""}`} />
+                        </Button>
+                    </div>
                 </div>
             </CardHeader>
             <CardContent className="p-4 pt-0">
@@ -58,12 +74,19 @@ export function MenuCard({ item }: MenuCardProps) {
                 </div>
             </CardContent>
             <CardFooter className="p-4 pt-0 bg-muted/50 p-3 mt-auto">
-                <Button asChild className="w-full gap-2" size="sm" disabled={item.is_sold_out || false}>
-                    <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                {item.is_sold_out ? (
+                    <Button className="w-full gap-2" size="sm" disabled variant="secondary">
                         <ExternalLink className="h-4 w-4" />
-                        Commander sur WhatsApp
-                    </a>
-                </Button>
+                        Épuisé
+                    </Button>
+                ) : (
+                    <Button asChild className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white" size="sm">
+                        <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="h-4 w-4" />
+                            Commander sur WhatsApp
+                        </a>
+                    </Button>
+                )}
             </CardFooter>
         </Card>
     )

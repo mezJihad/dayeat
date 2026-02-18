@@ -75,6 +75,7 @@ export function FilterBar() {
           <option value="Gouter">Goûter</option>
           <option value="Diner">Dîner</option>
           <option value="AntiGaspi">Panier Anti-Gaspi ♻️</option>
+          <option value="favorites">❤️ Mes Favoris</option>
         </Select>
       </div>
 

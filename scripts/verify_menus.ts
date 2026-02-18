@@ -91,6 +91,6 @@ async function verifyMenus() {
 
 
 }
-}
 
-verifyMenus()
+
+// verifyMenus()
