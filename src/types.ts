@@ -129,6 +129,7 @@ export interface Database {
                     category: Database["public"]["Enums"]["menu_category"]
                     meal_period: Database["public"]["Enums"]["meal_period"]
                     is_sold_out: boolean | null
+                    restaurant_id: string
                     restaurant_name: string
                     restaurant_phone: string
                     restaurant_address: string | null

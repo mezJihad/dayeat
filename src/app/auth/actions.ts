@@ -46,3 +46,20 @@ export async function signup(formData: FormData) {
     revalidatePath('/', 'layout')
     redirect('/admin')
 }
+
+export async function resetPassword(formData: FormData) {
+    const supabase = await createClient()
+
+    const email = formData.get('email') as string
+    const origin = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${origin}/auth/callback?next=/admin/update-password`,
+    })
+
+    if (error) {
+        return { error: "Impossible d'envoyer l'email de réinitialisation. Vérifiez l'adresse." }
+    }
+
+    return { message: 'Email de réinitialisation envoyé ! Vérifiez votre boîte mail.' }
+}

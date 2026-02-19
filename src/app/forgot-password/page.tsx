@@ -1,29 +1,27 @@
 'use client'
 
-import { login, signup } from '@/app/auth/actions'
+import { resetPassword } from '@/app/auth/actions'
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useState, useTransition } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
     const [isPending, startTransition] = useTransition()
     const [error, setError] = useState<string | null>(null)
     const [message, setMessage] = useState<string | null>(null)
-    const [isLoginMode, setIsLoginMode] = useState(true)
 
     async function handleSubmit(formData: FormData) {
         setError(null)
         setMessage(null)
         startTransition(async () => {
-            const action = isLoginMode ? login : signup
-            const result = await action(formData)
+            const result = await resetPassword(formData)
             if (result?.error) {
                 setError(result.error)
-            } else if ((result as any)?.message) {
-                setMessage((result as any).message)
+            } else if (result?.message) {
+                setMessage(result.message)
             }
         })
     }
@@ -32,13 +30,9 @@ export default function LoginPage() {
         <div className="flex min-h-screen items-center justify-center p-4">
             <Card className="w-full max-w-sm">
                 <CardHeader>
-                    <CardTitle className="text-2xl">
-                        {isLoginMode ? 'Connexion' : 'Créer un compte'}
-                    </CardTitle>
+                    <CardTitle className="text-2xl">Mot de passe oublié</CardTitle>
                     <CardDescription>
-                        {isLoginMode
-                            ? 'Entrez vos identifiants pour accéder à votre espace.'
-                            : 'Entrez un email et un mot de passe pour commencer.'}
+                        Entrez votre email pour recevoir un lien de réinitialisation.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -52,18 +46,6 @@ export default function LoginPage() {
                                 placeholder="m@example.com"
                                 required
                             />
-                        </div>
-                        <div className="grid gap-2">
-                            <div className="flex items-center">
-                                <label htmlFor="password">Mot de passe</label>
-                                <Link
-                                    href="/forgot-password"
-                                    className="ml-auto inline-block text-sm underline"
-                                >
-                                    Mot de passe oublié ?
-                                </Link>
-                            </div>
-                            <Input id="password" name="password" type="password" required />
                         </div>
 
                         {error && (
@@ -83,25 +65,13 @@ export default function LoginPage() {
                             disabled={isPending}
                         >
                             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isLoginMode ? 'Se connecter' : "S'inscrire"}
+                            Envoyer le lien
                         </Button>
                     </form>
-
-                    <div className="mt-4 text-center text-sm">
-                        <span className="text-muted-foreground">
-                            {isLoginMode ? "Pas encore de compte ? " : "Déjà un compte ? "}
-                        </span>
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setIsLoginMode(!isLoginMode)
-                                setError(null)
-                                setMessage(null)
-                            }}
-                            className="underline hover:text-primary font-medium"
-                        >
-                            {isLoginMode ? "Créer un compte" : "Se connecter"}
-                        </button>
+                    <div className="mt-4 text-center">
+                        <Link href="/login" className="text-sm text-muted-foreground hover:text-primary flex items-center justify-center gap-2">
+                            <ArrowLeft className="h-4 w-4" /> Retour à la connexion
+                        </Link>
                     </div>
                 </CardContent>
             </Card>

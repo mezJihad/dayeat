@@ -4,6 +4,7 @@ import { Database } from "@/types"
 import { ExternalLink, MapPin, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useFavorites } from "@/hooks/useFavorites"
+import { toast } from "sonner"
 
 type MenuItem = Database['public']['Functions']['get_menus_around']['Returns'][number]
 
@@ -16,6 +17,16 @@ export function MenuCard({ item }: MenuCardProps) {
     const isFav = isFavorite(item.restaurant_id)
     const whatsappMessage = `Bonjour, je souhaite commander : ${item.title} du menu du jour.`
     const whatsappUrl = `https://wa.me/${item.restaurant_phone}?text=${encodeURIComponent(whatsappMessage)}`
+
+    const handleToggleFavorite = (e: React.MouseEvent) => {
+        e.preventDefault()
+        toggleFavorite(item.restaurant_id)
+        if (!isFav) {
+            toast.success(`Le restaurant ${item.restaurant_name} a été ajouté aux favoris`)
+        } else {
+            toast.info(`Le restaurant ${item.restaurant_name} a été retiré des favoris`)
+        }
+    }
 
     return (
         <Card className="w-full max-w-sm overflow-hidden transition-all hover:shadow-md">
@@ -43,30 +54,29 @@ export function MenuCard({ item }: MenuCardProps) {
                                 {item.is_sold_out ? "Épuisé" : `${item.price} MAD`}
                             </Badge>
                         )}
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-muted-foreground hover:text-red-500"
-                            onClick={(e) => {
-                                e.preventDefault()
-                                toggleFavorite(item.restaurant_id)
-                            }}
-                        >
-                            <Heart className={`h-5 w-5 ${isFav ? "fill-red-500 text-red-500" : ""}`} />
-                        </Button>
                     </div>
                 </div>
             </CardHeader>
             <CardContent className="p-4 pt-0">
                 <div className="flex flex-col gap-2 text-sm text-muted-foreground mt-2">
                     <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        <span className="line-clamp-1">{item.restaurant_name}</span>
+                        <MapPin className="h-4 w-4 shrink-0" />
+                        <span className="line-clamp-1 font-medium text-foreground">{item.restaurant_name}</span>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 ml-1 text-muted-foreground hover:text-red-500 shrink-0"
+                            onClick={handleToggleFavorite}
+                        >
+                            <Heart className={`h-4 w-4 ${isFav ? "fill-red-500 text-red-500" : ""}`} />
+                        </Button>
                     </div>
                     {item.restaurant_address && (
                         <p className="text-xs pl-5 line-clamp-1">{item.restaurant_address}</p>
                     )}
-                    <p className="pl-5 text-xs">A {Math.round(item.dist_meters)}m</p>
+                    {item.dist_meters > 0 && (
+                        <p className="pl-5 text-xs">A {Math.round(item.dist_meters)}m</p>
+                    )}
                 </div>
                 <div className="flex gap-2 mt-2">
                     <Badge variant="outline">{item.meal_period}</Badge>
