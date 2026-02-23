@@ -1,8 +1,27 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Database } from "@/types"
-import { ExternalLink, MapPin, Heart } from "lucide-react"
+import { ExternalLink, MapPin, Heart, Store, ShoppingBag, Info, Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import { useFavorites } from "@/hooks/useFavorites"
 import { toast } from "sonner"
 
@@ -65,10 +84,47 @@ export function MenuCard({ item }: MenuCardProps) {
             <CardContent className="p-4 pt-2 flex-1 flex flex-col">
                 <div className="flex flex-col gap-1 text-sm text-muted-foreground mt-1 flex-1">
                     <div className="flex items-center gap-1 justify-between">
-                        <div className="flex items-center gap-1 overflow-hidden">
-                            <MapPin className="h-4 w-4 shrink-0 text-orange-600" />
-                            <span className="line-clamp-1 font-semibold text-foreground">{item.restaurant_name}</span>
-                        </div>
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <button className="flex items-center gap-1.5 overflow-hidden text-left hover:opacity-80 transition-opacity focus:outline-none pr-2">
+                                    <MapPin className="h-4 w-4 shrink-0 text-orange-600" />
+                                    <span className="line-clamp-1 font-semibold text-foreground underline decoration-dotted underline-offset-4">{item.restaurant_name}</span>
+                                </button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle>{item.restaurant_name}</DialogTitle>
+                                    <DialogDescription>
+                                        Informations pratiques et contact
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="flex flex-col gap-5 py-2">
+                                    {item.restaurant_address && (
+                                        <div className="flex items-start gap-3">
+                                            <MapPin className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                                            <div className="flex flex-col gap-2">
+                                                <p className="text-sm">{item.restaurant_address}</p>
+                                                <a
+                                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.restaurant_address)}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1.5 text-xs font-medium text-orange-600 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 rounded-md px-3 py-2 w-max transition-colors"
+                                                >
+                                                    <MapPin className="h-4 w-4" />
+                                                    Ouvrir dans Google Maps
+                                                </a>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {item.restaurant_phone && (
+                                        <div className="flex items-center gap-3">
+                                            <Phone className="h-5 w-5 text-muted-foreground shrink-0" />
+                                            <p className="text-sm font-medium">{item.restaurant_phone}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </DialogContent>
+                        </Dialog>
                         <Button
                             variant="ghost"
                             size="icon"
@@ -78,27 +134,18 @@ export function MenuCard({ item }: MenuCardProps) {
                             <Heart className={`h-4 w-4 ${isFav ? "fill-red-500 text-red-500" : ""}`} />
                         </Button>
                     </div>
-                    {item.restaurant_address && (
-                        <div className="flex justify-between items-start gap-2 pl-5">
-                            <p className="text-xs line-clamp-2 flex-1 mt-0.5">{item.restaurant_address}</p>
-                            <a
-                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.restaurant_address)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-orange-600 hover:text-orange-700 bg-orange-50 p-1.5 rounded-full shrink-0"
-                                title="Voir l'itinéraire"
-                            >
-                                <ExternalLink className="h-3 w-3" />
-                            </a>
-                        </div>
-                    )}
                     {item.dist_meters > 0 && (
                         <p className="pl-5 text-xs">A {Math.round(item.dist_meters)}m</p>
                     )}
                 </div>
-                <div className="flex gap-2 mt-3 pt-3 border-t border-border/50">
+                <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-border/50">
                     <Badge variant="outline" className="bg-orange-50/50 text-orange-700 hover:bg-orange-50/50">{item.meal_period}</Badge>
-                    <Badge variant="outline" className="bg-orange-50/50 text-orange-700 hover:bg-orange-50/50">{item.category}</Badge>
+                    <Badge variant="outline" className="bg-secondary/40 text-muted-foreground font-medium flex items-center gap-1">
+                        <Store className="w-3 h-3" /> Sur place
+                    </Badge>
+                    <Badge variant="outline" className="bg-secondary/40 text-muted-foreground font-medium flex items-center gap-1">
+                        <ShoppingBag className="w-3 h-3" /> À emporter
+                    </Badge>
                 </div>
             </CardContent>
             <CardFooter className="p-4 pt-0 bg-muted/30 pb-3 mt-auto shrink-0 flex flex-col gap-2">
@@ -107,23 +154,56 @@ export function MenuCard({ item }: MenuCardProps) {
                         <ExternalLink className="h-4 w-4" />
                         Épuisé
                     </Button>
-                ) : item.accepts_reservations !== false ? (
-                    <div className="w-full mt-4 flex flex-col gap-2">
-                        <Button asChild className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white" size="sm">
-                            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="h-4 w-4" />
-                                Commander sur WhatsApp
-                            </a>
-                        </Button>
-                        <p className="text-[11px] text-center text-muted-foreground font-medium">
-                            Également disponible sur place ou à emporter.
-                        </p>
-                    </div>
                 ) : (
-                    <div className="w-full mt-4 p-3 bg-orange-50 border border-orange-100 rounded-md text-center">
-                        <p className="text-xs font-semibold text-orange-800">
-                            Disponible sur place ou à emporter.
-                        </p>
+                    <div className="w-full mt-2 flex flex-col gap-3">
+                        {item.accepts_reservations !== false ? (
+                            item.dist_meters > 0 ? (
+                                item.dist_meters > 20000 ? (
+                                    <Button className="w-full gap-2 bg-secondary/50 text-muted-foreground" size="sm" variant="secondary" disabled>
+                                        <ExternalLink className="h-4 w-4" />
+                                        Trop éloigné (&gt; {Math.round(item.dist_meters / 1000)}km)
+                                    </Button>
+                                ) : (
+                                    <Button asChild className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white" size="sm">
+                                        <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                                            <ExternalLink className="h-4 w-4" />
+                                            Réserver via WhatsApp
+                                        </a>
+                                    </Button>
+                                )
+                            ) : (
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white" size="sm">
+                                            <ExternalLink className="h-4 w-4" />
+                                            Réserver via WhatsApp
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Vérifier la distance</AlertDialogTitle>
+                                            <AlertDialogDescription className="space-y-2">
+                                                <p>
+                                                    Nous n'avons pas accès à votre localisation pour vérifier la distance. L'activation de la position GPS est <strong className="text-foreground">obligatoire</strong> pour pouvoir commander.
+                                                </p>
+                                                {item.restaurant_address && (
+                                                    <p className="font-medium text-foreground mt-4">
+                                                        📍 Adresse : {item.restaurant_address}
+                                                    </p>
+                                                )}
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel className="w-full">J'ai compris</AlertDialogCancel>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            )
+                        ) : (
+                            <Button className="w-full gap-2 bg-secondary/50 text-muted-foreground" size="sm" variant="secondary" disabled>
+                                Pas de réservation WhatsApp
+                            </Button>
+                        )}
                     </div>
                 )}
             </CardFooter>

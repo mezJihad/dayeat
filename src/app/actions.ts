@@ -63,7 +63,8 @@ export async function getTodayMenus(filters?: {
       restaurants (
         name,
         whatsapp_phone,
-        logo_url
+        logo_url,
+        address
       )
     `)
         .eq('is_active_today', true)
