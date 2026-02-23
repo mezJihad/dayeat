@@ -184,6 +184,23 @@ export default async function AdminPage() {
                             </div>
                         </div>
 
+                        <div className="flex items-center space-x-2 pt-2 pb-2">
+                            <input
+                                type="checkbox"
+                                id="accepts_reservations"
+                                name="accepts_reservations"
+                                value="true"
+                                defaultChecked
+                                className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
+                            />
+                            <label
+                                htmlFor="accepts_reservations"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                                Accepter les réservations (WhatsApp)
+                            </label>
+                        </div>
+
                         <Button type="submit" className="w-full mt-4 bg-orange-500 hover:bg-orange-600">
                             <PlusCircle className="mr-2 h-4 w-4" />
                             Publier le Plat

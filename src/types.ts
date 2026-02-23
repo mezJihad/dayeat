@@ -24,6 +24,7 @@ export interface Database {
                     published_at: string | null
                     restaurant_id: string
                     title: string
+                    accepts_reservations: boolean | null
                 }
                 Insert: {
                     category: Database["public"]["Enums"]["menu_category"]
@@ -39,6 +40,7 @@ export interface Database {
                     published_at?: string | null
                     restaurant_id: string
                     title: string
+                    accepts_reservations?: boolean | null
                 }
                 Update: {
                     category?: Database["public"]["Enums"]["menu_category"]
@@ -54,6 +56,7 @@ export interface Database {
                     published_at?: string | null
                     restaurant_id?: string
                     title?: string
+                    accepts_reservations?: boolean | null
                 }
                 Relationships: [
                     {
@@ -134,6 +137,7 @@ export interface Database {
                     restaurant_phone: string
                     restaurant_address: string | null
                     dist_meters: number
+                    accepts_reservations: boolean | null
                 }[]
             }
         }

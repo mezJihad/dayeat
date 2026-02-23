@@ -105,6 +105,7 @@ export async function addMenuItem(formData: FormData) {
     const meal_period = formData.get('meal_period') as any
     const description = formData.get('description') as string
     const photo = formData.get('photo') as File
+    const accepts_reservations = formData.get('accepts_reservations') === 'true'
 
     if (!title || !price || !meal_period) {
         throw new Error('Champs manquants')
@@ -137,9 +138,9 @@ export async function addMenuItem(formData: FormData) {
         photo_url,
         is_active_today: true,
         is_sold_out: false,
-        is_sold_out: false,
         category: 'Plat', // Default
         description: description || 'Délicieux plat du jour',
+        accepts_reservations,
     })
 
     if (error) {
