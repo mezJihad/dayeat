@@ -14,7 +14,7 @@ export async function getTodayMenus(filters?: {
     const supabase = await createClient()
     const { category, lat, long, radius = 5000 } = filters || {}
 
-    // If geolocation is provided, use the RPC function
+    // If geolocation is provided, use the localized RPC function
     if (lat && long) {
         const { data, error } = await supabase.rpc('get_menus_around', {
             lat,
@@ -27,72 +27,63 @@ export async function getTodayMenus(filters?: {
             return []
         }
 
-        // RPC returns flat data, we might need to map it or use it as is.
-        // The RPC returns specific columns. Let's filter by category if needed in memory or add to RPC?
-        // For MVP, let's filter in memory after RPC or update RPC.
-        // Update: RPC doesn't support category param yet. Filter here.
         let menus = data as any[]
 
         if (category && category !== 'all') {
             menus = menus.filter((menu: any) => menu.meal_period === category)
         }
 
-        // Filter by date (ensure we only show today's menus even if RPC returns more)
-        const today = new Date().toISOString().split('T')[0]
-        menus = menus.filter((menu: any) => menu.created_at >= today)
-
-        // Transform to match the structure expected by the UI if needed
-        // The RPC returns flat structure with restaurant_name etc.
-        // The UI expects nested `restaurants` object.
         return menus.map((menu: any) => ({
             ...menu,
             id: menu.menu_item_id, // Map RPC id back to id
             restaurants: {
                 name: menu.restaurant_name,
                 whatsapp_phone: menu.restaurant_phone,
-                // logo_url: menu.restaurant_logo // RPC might not return this yet
+                address: menu.restaurant_address,
+                lat: menu.restaurant_lat,
+                long: menu.restaurant_long
             }
         }))
     }
 
-    // Otherwise, standard query
-    let query = supabase
-        .from('menu_items')
-        .select(`
-      *,
-      restaurants (
-        name,
-        whatsapp_phone,
-        logo_url,
-        address
-      )
-    `)
-        .eq('is_active_today', true)
-        .gte('created_at', new Date().toISOString().split('T')[0]) // Filter for today
-        .order('created_at', { ascending: false })
-
-    if (category && category !== 'all') {
-        query = query.eq('meal_period', category as any)
-    }
-
-    const { data, error } = await query
+    // Otherwise, get all menus using the new global RPC (which includes coords)
+    const { data, error } = await supabase.rpc('get_all_active_menus')
 
     if (error) {
-        console.error('Error fetching menus:', error)
+        console.error('Error fetching all active menus via RPC:', error)
         return []
     }
 
-    return data
+    let menus = data as any[]
+
+    if (category && category !== 'all') {
+        menus = menus.filter((menu: any) => menu.meal_period === category)
+    }
+
+    return menus.map((menu: any) => ({
+        ...menu,
+        id: menu.menu_item_id, // Map RPC id back to id
+        restaurants: {
+            name: menu.restaurant_name,
+            whatsapp_phone: menu.restaurant_phone,
+            address: menu.restaurant_address,
+            lat: menu.restaurant_lat,
+            long: menu.restaurant_long
+        }
+    }))
 }
 
 // Add a new menu item (Basic MVP version)
 export async function addMenuItem(formData: FormData) {
     const supabase = await createClient()
 
-    // For MVP: Fetch the first restaurant available to link the item to it
+    const { data: { user } } = await supabase.auth.getUser()
+
+    // Fetch the restaurant linked to the current user
     const { data: restaurant, error: restaurantError } = await supabase
         .from('restaurants')
         .select('id')
+        .eq('owner_id', user?.id || '')
         .limit(1)
         .single()
 
@@ -116,18 +107,23 @@ export async function addMenuItem(formData: FormData) {
 
     if (photo && photo.size > 0) {
         const filename = `${Date.now()}-${photo.name.replace(/[^a-zA-Z0-9.]/g, '')}`
-        const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('menus')
-            .upload(filename, photo)
-
-        if (uploadError) {
-            console.error('Upload error:', uploadError)
-            // Continue without photo or throw? Let's continue but log it.
-        } else {
-            const { data: { publicUrl } } = supabase.storage
+        try {
+            const { data: uploadData, error: uploadError } = await supabase.storage
                 .from('menus')
-                .getPublicUrl(filename)
-            photo_url = publicUrl
+                .upload(filename, photo)
+
+            if (uploadError) {
+                console.error('Upload error:', uploadError)
+                // Continue without photo instead of crashing
+            } else {
+                const { data: { publicUrl } } = supabase.storage
+                    .from('menus')
+                    .getPublicUrl(filename)
+                photo_url = publicUrl
+            }
+        } catch (storageError) {
+            console.error('Storage Exception (Failed to fetch):', storageError)
+            // If storage fails entirely (e.g. CORS, bucket missing), we still want to create the menu item just without a photo
         }
     }
 
@@ -153,11 +149,79 @@ export async function addMenuItem(formData: FormData) {
     revalidatePath('/admin')
 }
 
+// Edit an existing menu item
+export async function editMenuItem(menuId: string, formData: FormData) {
+    const supabase = await createClient()
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Unauthorized')
+
+    const title = formData.get('title') as string
+    const price = parseFloat(formData.get('price') as string)
+    const meal_period = formData.get('meal_period') as string
+    const description = formData.get('description') as string
+    const photo = formData.get('photo') as File
+    const accepts_reservations = formData.get('accepts_reservations') === 'true'
+
+    if (!title || !price || !meal_period) {
+        throw new Error('Champs manquants')
+    }
+
+    let photo_url_update = undefined
+
+    if (photo && photo.size > 0) {
+        const filename = `${Date.now()}-${photo.name.replace(/[^a-zA-Z0-9.]/g, '')}`
+        try {
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('menus')
+                .upload(filename, photo)
+
+            if (!uploadError) {
+                const { data: { publicUrl } } = supabase.storage
+                    .from('menus')
+                    .getPublicUrl(filename)
+                photo_url_update = publicUrl
+            }
+        } catch (storageError) {
+            console.error('Storage Exception:', storageError)
+        }
+    }
+
+    const updateData: any = {
+        title,
+        price,
+        meal_period,
+        description: description || 'Délicieux plat du jour',
+        accepts_reservations,
+    }
+
+    if (photo_url_update) {
+        updateData.photo_url = photo_url_update
+    }
+
+    const { error } = await supabase.from('menu_items')
+        .update(updateData)
+        .eq('id', menuId)
+
+    if (error) {
+        console.error('Error updating item:', error)
+        throw new Error('Erreur lors de la modification du plat')
+    }
+
+    revalidatePath('/')
+    revalidatePath('/admin')
+}
+
 export async function getRestaurant() {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return null
+
     const { data: restaurant } = await supabase
         .from('restaurants')
         .select('*')
+        .eq('owner_id', user.id)
         .limit(1)
         .single()
 
@@ -175,10 +239,17 @@ export async function createRestaurant(formData: FormData) {
     const name = formData.get('name') as string
     const whatsapp_phone = formData.get('whatsapp_phone') as string
     const address = formData.get('address') as string
+    const lat = formData.get('lat') as string
+    const long = formData.get('long') as string
 
     if (!name || !whatsapp_phone) {
         throw new Error('Nom et WhatsApp requis')
     }
+
+    // Default to Casablanca center if no map coordinates are provided
+    const locationString = (lat && long)
+        ? `POINT(${parseFloat(long)} ${parseFloat(lat)})`
+        : 'POINT(-7.5898 33.5731)'
 
     const { error } = await supabase.from('restaurants').insert({
         name,
@@ -186,7 +257,7 @@ export async function createRestaurant(formData: FormData) {
         address,
         owner_id,
         is_open: true,
-        location: 'POINT(0 0)', // Default location for MVP
+        location: locationString,
     })
 
     if (error) {

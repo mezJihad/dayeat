@@ -1,12 +1,12 @@
-import { addMenuItem, getRestaurant, createRestaurant, getRestaurantMenus } from '@/app/actions'
+import { getRestaurant, createRestaurant, getRestaurantMenus } from '@/app/actions'
 import { SignOutButton } from '@/components/SignOutButton'
+import { LocationPickerField } from '@/components/LocationPickerField'
 import { AdminMenuCard } from '@/components/AdminMenuCard'
+import { AddMenuForm } from '@/components/AddMenuForm'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Select } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { PlusCircle, Store, Upload, Clock, CalendarDays } from 'lucide-react'
+import { Store, Clock, CalendarDays } from 'lucide-react'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -24,7 +24,10 @@ export default async function AdminPage() {
     if (!restaurant) {
         return (
             <div className="container mx-auto p-4 max-w-md pb-24">
-                <h1 className="text-2xl font-bold mb-6">Bienvenue sur DayEat ! 🚀</h1>
+                <div className="flex justify-between items-start mb-6">
+                    <h1 className="text-2xl font-bold">Bienvenue sur DayEat ! 🚀</h1>
+                    <SignOutButton />
+                </div>
 
                 <Card className="border-orange-200 bg-orange-50">
                     <CardHeader>
@@ -60,18 +63,11 @@ export default async function AdminPage() {
                                 <p className="text-xs text-muted-foreground">Sans le '+' (ex: 212...)</p>
                             </div>
 
-                            <div className="space-y-2">
-                                <label htmlFor="address" className="text-sm font-medium">
-                                    Adresse (Optionnel)
-                                </label>
-                                <Input
-                                    id="address"
-                                    name="address"
-                                    placeholder="123 Bd Mohamed V, Casablanca"
-                                />
+                            <div className="space-y-2 mt-4">
+                                <LocationPickerField />
                             </div>
 
-                            <Button type="submit" className="w-full mt-4 bg-orange-600 hover:bg-orange-700">
+                            <Button type="submit" className="w-full mt-6 bg-orange-600 hover:bg-orange-700">
                                 <Store className="mr-2 h-4 w-4" />
                                 Créer mon Restaurant
                             </Button>
@@ -114,98 +110,7 @@ export default async function AdminPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form action={addMenuItem} className="space-y-4">
-                        <div className="space-y-2">
-                            <label htmlFor="title" className="text-sm font-medium">
-                                Qu'est-ce qu'on mange ? (Titre)
-                            </label>
-                            <Input
-                                id="title"
-                                name="title"
-                                placeholder="Ex: Tajine de Poulet aux Olives"
-                                required
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label htmlFor="price" className="text-sm font-medium">
-                                Prix (DH)
-                            </label>
-                            <Input
-                                id="price"
-                                name="price"
-                                type="number"
-                                placeholder="45"
-                                required
-                                min="0"
-                                step="0.5"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label htmlFor="meal_period" className="text-sm font-medium">
-                                Service
-                            </label>
-                            <div className="relative">
-                                <Select id="meal_period" name="meal_period" required defaultValue="Dejeuner">
-                                    <option value="Petit-Dej">Petit-Déjeuner</option>
-                                    <option value="Dejeuner">Déjeuner</option>
-                                    <option value="Gouter">Goûter</option>
-                                    <option value="Diner">Dîner</option>
-                                    <option value="AntiGaspi">Panier Anti-Gaspi</option>
-                                </Select>
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label htmlFor="description" className="text-sm font-medium">
-                                Description (Ingrédients, allergènes...)
-                            </label>
-                            <Textarea
-                                id="description"
-                                name="description"
-                                placeholder="Ex: Poulet fermier, olives violettes, citrons confits maison, servi avec pain semoule."
-                                className="resize-none"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label htmlFor="photo" className="text-sm font-medium">
-                                Photo (Optionnel)
-                            </label>
-                            <div className="flex items-center gap-2">
-                                <Input
-                                    id="photo"
-                                    name="photo"
-                                    type="file"
-                                    accept="image/*"
-                                    className="cursor-pointer file:cursor-pointer"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex items-center space-x-2 pt-2 pb-2">
-                            <input
-                                type="checkbox"
-                                id="accepts_reservations"
-                                name="accepts_reservations"
-                                value="true"
-                                defaultChecked
-                                className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
-                            />
-                            <label
-                                htmlFor="accepts_reservations"
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                                Accepter les réservations (WhatsApp)
-                            </label>
-                        </div>
-
-                        <Button type="submit" className="w-full mt-4 bg-orange-500 hover:bg-orange-600">
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            Publier le Plat
-                        </Button>
-                    </form>
+                    <AddMenuForm />
                 </CardContent>
             </Card>
 

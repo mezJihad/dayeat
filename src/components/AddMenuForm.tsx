@@ -1,0 +1,204 @@
+'use client'
+
+import { useState, useRef } from 'react'
+import { addMenuItem, editMenuItem } from '@/app/actions'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { PlusCircle, Loader2, Save } from 'lucide-react'
+import imageCompression from 'browser-image-compression'
+
+export interface MenuToEdit {
+    id: string
+    title: string
+    price: number
+    meal_period: string
+    description: string | null
+    accepts_reservations: boolean | null
+    photo_url: string | null
+}
+
+interface AddMenuFormProps {
+    menuToEdit?: MenuToEdit
+    onSuccess?: () => void
+}
+
+export function AddMenuForm({ menuToEdit, onSuccess }: AddMenuFormProps) {
+    const isEditing = !!menuToEdit
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const formRef = useRef<HTMLFormElement>(null)
+
+    async function handleAddMenu(formData: FormData) {
+        setIsSubmitting(true)
+        try {
+            const photoFile = formData.get('photo') as File
+
+            if (photoFile && photoFile.size > 0) {
+                // Compression options
+                const options = {
+                    maxSizeMB: 0.2, // ~200 KB
+                    maxWidthOrHeight: 1280,
+                    useWebWorker: true
+                }
+
+                try {
+                    const compressedFile = await imageCompression(photoFile, options)
+                    // Overwrite the raw image with the compressed one
+                    formData.set('photo', compressedFile, compressedFile.name)
+                    console.log(`Image compressed from ${(photoFile.size / 1024 / 1024).toFixed(2)} MB to ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`)
+                } catch (error) {
+                    console.error('Error compressing image:', error)
+                    // If compression fails, we fallback to sending the original file
+                }
+            }
+
+            // Execute the appropriate Server Action based on context
+            if (isEditing && menuToEdit) {
+                await editMenuItem(menuToEdit.id, formData)
+            } else {
+                await addMenuItem(formData)
+            }
+
+            // Clear the form fields upon success if adding new
+            if (!isEditing) {
+                formRef.current?.reset()
+            }
+
+            if (onSuccess) {
+                onSuccess()
+            }
+
+        } catch (error) {
+            console.error('Error submitting form:', error)
+            alert('Une erreur est survenue lors de la communication de vos changements.')
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    return (
+        <form ref={formRef} action={handleAddMenu} className="space-y-4">
+            <div className="space-y-2">
+                <label htmlFor="title" className="text-sm font-medium">
+                    Qu'est-ce qu'on mange ? (Titre)
+                </label>
+                <Input
+                    id="title"
+                    name="title"
+                    defaultValue={menuToEdit?.title}
+                    placeholder="Ex: Tajine de Poulet aux Olives"
+                    required
+                    disabled={isSubmitting}
+                />
+            </div>
+
+            <div className="space-y-2">
+                <label htmlFor="price" className="text-sm font-medium">
+                    Prix (DH)
+                </label>
+                <Input
+                    id="price"
+                    name="price"
+                    type="number"
+                    defaultValue={menuToEdit?.price}
+                    placeholder="45"
+                    required
+                    min="0"
+                    step="0.5"
+                    disabled={isSubmitting}
+                />
+            </div>
+
+            <div className="space-y-2">
+                <label htmlFor="meal_period" className="text-sm font-medium">
+                    Service
+                </label>
+                <div className="relative">
+                    <Select
+                        id="meal_period"
+                        name="meal_period"
+                        required
+                        defaultValue={menuToEdit?.meal_period || "Dejeuner"}
+                        disabled={isSubmitting}
+                    >
+                        <option value="Petit-Dej">Petit-Déjeuner</option>
+                        <option value="Dejeuner">Déjeuner</option>
+                        <option value="Gouter">Goûter</option>
+                        <option value="Diner">Dîner</option>
+                        <option value="AntiGaspi">Panier Anti-Gaspi</option>
+                    </Select>
+                </div>
+            </div>
+
+            <div className="space-y-2">
+                <label htmlFor="description" className="text-sm font-medium">
+                    Description (Ingrédients, allergènes...)
+                </label>
+                <Textarea
+                    id="description"
+                    name="description"
+                    defaultValue={menuToEdit?.description || ''}
+                    placeholder="Ex: Poulet fermier, olives violettes, citrons confits maison, servi avec pain semoule."
+                    className="resize-none"
+                    disabled={isSubmitting}
+                />
+            </div>
+
+            <div className="space-y-2">
+                <label htmlFor="photo" className="text-sm font-medium">
+                    Photo {isEditing ? "(Optionnel - Seulement pour remplacer l'existant)" : "(Optionnel)"}
+                </label>
+                {isEditing && menuToEdit?.photo_url && (
+                    <div className="mb-2">
+                        <img src={menuToEdit.photo_url} alt="Current photo" className="h-16 w-16 object-cover rounded border" />
+                    </div>
+                )}
+                <div className="flex items-center gap-2">
+                    <Input
+                        id="photo"
+                        name="photo"
+                        type="file"
+                        accept="image/*"
+                        className="cursor-pointer file:cursor-pointer"
+                        disabled={isSubmitting}
+                    />
+                </div>
+                {!isEditing && (
+                    <p className="text-xs text-muted-foreground">
+                        Une belle photo augmente vos ventes ! Elle sera automatiquement compressée.
+                    </p>
+                )}
+            </div>
+
+            <div className="flex items-center space-x-2 pt-2 pb-2">
+                <input
+                    type="checkbox"
+                    id="accepts_reservations"
+                    name="accepts_reservations"
+                    value="true"
+                    defaultChecked={isEditing ? (menuToEdit?.accepts_reservations !== false) : true}
+                    className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
+                    disabled={isSubmitting}
+                />
+                <label
+                    htmlFor="accepts_reservations"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                    Accepter les réservations (WhatsApp)
+                </label>
+            </div>
+
+            <Button type="submit" className="w-full mt-4 bg-orange-500 hover:bg-orange-600" disabled={isSubmitting}>
+                {isSubmitting ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : isEditing ? (
+                    <Save className="mr-2 h-4 w-4" />
+                ) : (
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                )}
+                {isSubmitting ? 'Sauvegarde...' : isEditing ? 'Enregistrer les modifications' : 'Publier le Plat'}
+            </Button>
+        </form>
+    )
+}

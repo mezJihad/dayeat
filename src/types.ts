@@ -136,6 +136,29 @@ export interface Database {
                     restaurant_name: string
                     restaurant_phone: string
                     restaurant_address: string | null
+                    restaurant_lat: number
+                    restaurant_long: number
+                    dist_meters: number
+                    accepts_reservations: boolean | null
+                }[]
+            }
+            get_all_active_menus: {
+                Args: Record<PropertyKey, never>
+                Returns: {
+                    menu_item_id: string
+                    title: string
+                    description: string | null
+                    price: number
+                    photo_url: string | null
+                    category: Database["public"]["Enums"]["menu_category"]
+                    meal_period: Database["public"]["Enums"]["meal_period"]
+                    is_sold_out: boolean | null
+                    restaurant_id: string
+                    restaurant_name: string
+                    restaurant_phone: string
+                    restaurant_address: string | null
+                    restaurant_lat: number
+                    restaurant_long: number
                     dist_meters: number
                     accepts_reservations: boolean | null
                 }[]

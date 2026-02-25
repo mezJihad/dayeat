@@ -1,6 +1,6 @@
 import { getTodayMenus } from './actions'
 import { FilterBar } from '@/components/FilterBar'
-import { MenuFeed } from '@/components/MenuFeed'
+import { FeedToggle } from '@/components/FeedToggle'
 
 interface HomeProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -34,12 +34,14 @@ export default async function Home({ searchParams }: HomeProps) {
         </div>
       ) : (
         <div className="w-full">
-          <MenuFeed
+          <FeedToggle
             menus={menus.map((menu: any) => ({
               ...menu,
               restaurant_name: menu.restaurants?.name || menu.restaurant_name,
               restaurant_phone: menu.restaurants?.whatsapp_phone || menu.restaurant_phone,
               restaurant_address: menu.restaurants?.address || menu.restaurant_address,
+              lat: menu.restaurants?.lat || menu.restaurant_lat,
+              long: menu.restaurants?.long || menu.restaurant_long,
               dist_meters: menu.dist_meters || 0
             }))}
           />

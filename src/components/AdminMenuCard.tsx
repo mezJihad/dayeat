@@ -14,7 +14,15 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Trash2, Eye, EyeOff, RotateCcw } from 'lucide-react'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { AddMenuForm } from '@/components/AddMenuForm'
+import { Trash2, Eye, EyeOff, RotateCcw, Pencil } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -23,10 +31,12 @@ interface AdminMenuCardProps {
         id: string
         title: string
         price: number
+        description: string | null
         photo_url: string | null
         is_sold_out: boolean
         meal_period: string
         created_at: string
+        accepts_reservations: boolean | null
     }
     isHistory?: boolean
 }
@@ -35,6 +45,7 @@ export function AdminMenuCard({ menu, isHistory = false }: AdminMenuCardProps) {
     const [loading, setLoading] = useState(false)
     const [isRepublishOpen, setIsRepublishOpen] = useState(false)
     const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+    const [isEditOpen, setIsEditOpen] = useState(false)
 
     const handleToggleStatus = async () => {
         setLoading(true)
@@ -100,6 +111,11 @@ export function AdminMenuCard({ menu, isHistory = false }: AdminMenuCardProps) {
                             <span className="font-bold text-sm text-green-600">{menu.price} DH</span>
                         </div>
                         <p className="text-xs text-muted-foreground mt-1 capitalize">{menu.meal_period}</p>
+                        {menu.description && (
+                            <p className="text-xs text-muted-foreground mt-2 line-clamp-2 border-l-2 border-orange-200 pl-2">
+                                {menu.description}
+                            </p>
+                        )}
                     </div>
 
                     <div className="flex gap-2 justify-end mt-2">
@@ -151,6 +167,30 @@ export function AdminMenuCard({ menu, isHistory = false }: AdminMenuCardProps) {
                                     </>
                                 )}
                             </Button>
+                        )}
+
+                        {!isHistory && (
+                            <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+                                <DialogTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        disabled={loading}
+                                        className="h-8 w-8 text-foreground hover:bg-muted"
+                                    >
+                                        <Pencil className="w-3 h-3" />
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+                                    <DialogHeader>
+                                        <DialogTitle>Modifier le plat</DialogTitle>
+                                    </DialogHeader>
+                                    <AddMenuForm
+                                        menuToEdit={menu}
+                                        onSuccess={() => setIsEditOpen(false)}
+                                    />
+                                </DialogContent>
+                            </Dialog>
                         )}
 
                         <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
