@@ -10,10 +10,10 @@ export function SignOutButton() {
             variant="ghost"
             size="sm"
             onClick={() => signOut()}
-            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+            className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 font-medium"
         >
-            <LogOut className="w-4 h-4 mr-2" />
-            Déconnexion
+            <LogOut className="w-4 h-4 mr-2 shrink-0" />
+            <span>Déconnexion</span>
         </Button>
     )
 }

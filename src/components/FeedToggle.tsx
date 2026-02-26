@@ -18,19 +18,19 @@ export function FeedToggle({ menus }: FeedToggleProps) {
             <div className="flex justify-center w-full">
                 <div className="inline-flex bg-muted/60 p-1 rounded-lg border shadow-sm">
                     <Button
-                        variant={view === 'list' ? 'default' : 'ghost'}
+                        variant="ghost"
                         size="sm"
                         onClick={() => setView('list')}
-                        className={`rounded-md px-6 transition-all ${view === 'list' ? 'shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`rounded-md px-6 font-semibold transition-all ${view === 'list' ? 'bg-yellow-500 text-slate-900 hover:bg-yellow-600 shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         <List className="h-4 w-4 mr-2" />
                         Liste
                     </Button>
                     <Button
-                        variant={view === 'map' ? 'default' : 'ghost'}
+                        variant="ghost"
                         size="sm"
                         onClick={() => setView('map')}
-                        className={`rounded-md px-6 transition-all ${view === 'map' ? 'shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`rounded-md px-6 font-semibold transition-all ${view === 'map' ? 'bg-yellow-500 text-slate-900 hover:bg-yellow-600 shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         <Map className="h-4 w-4 mr-2" />
                         Carte

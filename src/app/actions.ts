@@ -98,6 +98,8 @@ export async function addMenuItem(formData: FormData) {
     const description = formData.get('description') as string
     const photo = formData.get('photo') as File
     const accepts_reservations = formData.get('accepts_reservations') === 'true'
+    const is_dine_in = formData.get('is_dine_in') === 'true'
+    const is_takeaway = formData.get('is_takeaway') === 'true'
 
     if (!title || !price || !meal_period) {
         throw new Error('Champs manquants')
@@ -138,6 +140,8 @@ export async function addMenuItem(formData: FormData) {
         category: 'Plat', // Default
         description: description || 'Délicieux plat du jour',
         accepts_reservations,
+        is_dine_in,
+        is_takeaway,
     })
 
     if (error) {
@@ -162,6 +166,8 @@ export async function editMenuItem(menuId: string, formData: FormData) {
     const description = formData.get('description') as string
     const photo = formData.get('photo') as File
     const accepts_reservations = formData.get('accepts_reservations') === 'true'
+    const is_dine_in = formData.get('is_dine_in') === 'true'
+    const is_takeaway = formData.get('is_takeaway') === 'true'
 
     if (!title || !price || !meal_period) {
         throw new Error('Champs manquants')
@@ -193,6 +199,8 @@ export async function editMenuItem(menuId: string, formData: FormData) {
         meal_period,
         description: description || 'Délicieux plat du jour',
         accepts_reservations,
+        is_dine_in,
+        is_takeaway,
     }
 
     if (photo_url_update) {
@@ -269,6 +277,49 @@ export async function createRestaurant(formData: FormData) {
     }
 
     revalidatePath('/admin')
+}
+
+export async function updateRestaurant(formData: FormData) {
+    const supabase = await createClient()
+
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        throw new Error('Non autorisé')
+    }
+
+    const name = formData.get('name') as string
+    const whatsapp_phone = formData.get('whatsapp_phone') as string
+    const address = formData.get('address') as string
+    const lat = formData.get('lat') as string
+    const long = formData.get('long') as string
+
+    if (!name || !whatsapp_phone) {
+        throw new Error('Nom et WhatsApp requis')
+    }
+
+    const updateData: any = {
+        name,
+        whatsapp_phone,
+        address
+    }
+
+    if (lat && long) {
+        updateData.location = `POINT(${parseFloat(long)} ${parseFloat(lat)})`
+    }
+
+    const { error } = await supabase
+        .from('restaurants')
+        .update(updateData)
+        .eq('owner_id', user.id)
+
+    if (error) {
+        console.error('Error updating restaurant:', error)
+        throw new Error('Erreur lors de la mise à jour des paramètres: ' + error.message)
+    }
+
+    revalidatePath('/admin')
+    revalidatePath('/')
 }
 
 export async function getRestaurantMenus(restaurantId: string) {

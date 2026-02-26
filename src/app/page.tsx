@@ -1,6 +1,7 @@
 import { getTodayMenus } from './actions'
 import { FilterBar } from '@/components/FilterBar'
 import { FeedToggle } from '@/components/FeedToggle'
+import Image from 'next/image'
 
 interface HomeProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -11,17 +12,38 @@ export default async function Home({ searchParams }: HomeProps) {
   const category = resolvedParams.category as string
   const lat = resolvedParams.lat ? parseFloat(resolvedParams.lat as string) : undefined
   const long = resolvedParams.long ? parseFloat(resolvedParams.long as string) : undefined
+  const sort = (resolvedParams.sort as string) || 'default'
 
   // If category is favorites, we fetch ALL menus and filter client-side
   const serverCategory = category === 'favorites' ? undefined : category
-  const menus = await getTodayMenus({ category: serverCategory, lat, long })
+  let menus = await getTodayMenus({ category: serverCategory, lat, long })
+
+  // Apply sorting
+  if (sort === 'price_asc') {
+    menus.sort((a, b) => parseFloat(a.price) - parseFloat(b.price))
+  } else if (sort === 'price_desc') {
+    menus.sort((a, b) => parseFloat(b.price) - parseFloat(a.price))
+  } else if (sort === 'dist_asc' && lat && long) {
+    menus.sort((a, b) => (a.dist_meters || 0) - (b.dist_meters || 0))
+  }
 
   return (
     <div className="container mx-auto p-4 max-w-2xl">
-      <header className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">DayEat 😋</h1>
-          <p className="text-muted-foreground text-sm">Les meilleurs menus du jour autour de vous</p>
+      <header className="mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex items-center gap-4">
+          <div className="relative p-1 bg-white rounded-full shadow-sm shrink-0">
+            <Image
+              src="/logo.png"
+              alt="DayEat Logo"
+              width={65}
+              height={65}
+              className="object-contain rounded-full"
+              priority
+            />
+          </div>
+          <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base font-medium leading-snug">
+            Les meilleurs <span className="text-red-700 font-bold">menus du jour</span><br />autour de vous
+          </p>
         </div>
       </header>
 

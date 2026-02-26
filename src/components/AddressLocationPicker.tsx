@@ -66,13 +66,24 @@ function DraggableMarker({
     )
 }
 
-export default function AddressLocationPicker() {
-    // Default to Casablanca
-    const defaultCenter: [number, number] = [33.5731, -7.5898]
+export default function AddressLocationPicker({
+    defaultAddress = '',
+    defaultLat,
+    defaultLong
+}: {
+    defaultAddress?: string
+    defaultLat?: number
+    defaultLong?: number
+}) {
+    // Default to Casablanca or provided location
+    const defaultCenter: [number, number] = (defaultLat !== undefined && defaultLong !== undefined)
+        ? [defaultLat, defaultLong]
+        : [33.5731, -7.5898]
+
     const [position, setPosition] = useState<[number, number]>(defaultCenter)
     const [searchQuery, setSearchQuery] = useState('')
     const [isSearching, setIsSearching] = useState(false)
-    const [addressText, setAddressText] = useState('')
+    const [addressText, setAddressText] = useState(defaultAddress)
 
     // Fallback if the user just hits enter on form
     const handleSearch = async (e?: React.MouseEvent | React.FormEvent) => {

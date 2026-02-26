@@ -25,6 +25,8 @@ export interface Database {
                     restaurant_id: string
                     title: string
                     accepts_reservations: boolean | null
+                    is_dine_in: boolean | null
+                    is_takeaway: boolean | null
                 }
                 Insert: {
                     category: Database["public"]["Enums"]["menu_category"]
@@ -41,6 +43,8 @@ export interface Database {
                     restaurant_id: string
                     title: string
                     accepts_reservations?: boolean | null
+                    is_dine_in?: boolean | null
+                    is_takeaway?: boolean | null
                 }
                 Update: {
                     category?: Database["public"]["Enums"]["menu_category"]
@@ -57,6 +61,8 @@ export interface Database {
                     restaurant_id?: string
                     title?: string
                     accepts_reservations?: boolean | null
+                    is_dine_in?: boolean | null
+                    is_takeaway?: boolean | null
                 }
                 Relationships: [
                     {
@@ -140,6 +146,8 @@ export interface Database {
                     restaurant_long: number
                     dist_meters: number
                     accepts_reservations: boolean | null
+                    is_dine_in: boolean | null
+                    is_takeaway: boolean | null
                 }[]
             }
             get_all_active_menus: {
@@ -161,6 +169,8 @@ export interface Database {
                     restaurant_long: number
                     dist_meters: number
                     accepts_reservations: boolean | null
+                    is_dine_in: boolean | null
+                    is_takeaway: boolean | null
                 }[]
             }
         }

@@ -3,6 +3,7 @@ import { SignOutButton } from '@/components/SignOutButton'
 import { LocationPickerField } from '@/components/LocationPickerField'
 import { AdminMenuCard } from '@/components/AdminMenuCard'
 import { AddMenuForm } from '@/components/AddMenuForm'
+import { RestaurantSettingsDialog } from '@/components/RestaurantSettingsDialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -29,7 +30,7 @@ export default async function AdminPage() {
                     <SignOutButton />
                 </div>
 
-                <Card className="border-orange-200 bg-orange-50">
+                <Card className="border-red-200 bg-red-50">
                     <CardHeader>
                         <CardTitle>Créez votre Restaurant</CardTitle>
                         <CardDescription>
@@ -67,7 +68,7 @@ export default async function AdminPage() {
                                 <LocationPickerField />
                             </div>
 
-                            <Button type="submit" className="w-full mt-6 bg-orange-600 hover:bg-orange-700">
+                            <Button type="submit" className="w-full mt-6 bg-red-700 hover:bg-red-800">
                                 <Store className="mr-2 h-4 w-4" />
                                 Créer mon Restaurant
                             </Button>
@@ -92,14 +93,22 @@ export default async function AdminPage() {
 
     return (
         <div className="container mx-auto p-4 max-w-md pb-24">
-            <div className="flex justify-between items-start mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold">Mon Restaurant 👨‍🍳</h1>
-                    <p className="text-sm text-muted-foreground">
-                        Restaurant: <span className="font-semibold text-foreground">{restaurant.name}</span>
-                    </p>
-                </div>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold tracking-tight">Espace Pro 👨‍🍳</h1>
                 <SignOutButton />
+            </div>
+
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between mb-8 shadow-sm">
+                <div className="flex items-center gap-3 overflow-hidden">
+                    <div className="bg-yellow-50 dark:bg-yellow-900/30 p-2.5 rounded-full shrink-0 border border-yellow-100">
+                        <Store className="w-5 h-5 text-yellow-600 dark:text-yellow-500" />
+                    </div>
+                    <div className="flex flex-col min-w-0 pr-2">
+                        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Mon Restaurant</span>
+                        <h2 className="text-lg font-bold truncate text-slate-800 dark:text-slate-100 leading-none">{restaurant.name}</h2>
+                    </div>
+                </div>
+                <RestaurantSettingsDialog restaurant={restaurant} />
             </div>
 
             <Card className="mb-8">
@@ -117,7 +126,7 @@ export default async function AdminPage() {
             <div className="space-y-8">
                 <section>
                     <div className="flex items-center gap-2 mb-4">
-                        <CalendarDays className="w-5 h-5 text-orange-600" />
+                        <CalendarDays className="w-5 h-5 text-red-700" />
                         <h2 className="text-xl font-bold">Au Menu Aujourd'hui</h2>
                     </div>
 

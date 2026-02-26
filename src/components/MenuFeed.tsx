@@ -15,9 +15,9 @@ export function MenuFeed({ menus }: MenuFeedProps) {
     const { isFavorite, favorites } = useFavorites()
 
     // Check if we should filter by favorites
-    const showFavoritesOnly = searchParams.get('category') === 'favorites'
+    const showFavoritesOnly = searchParams.get('favorites') === 'true'
 
-    // Filter menus locally if needed
+    // Sort logic happens in page.tsx, so we just filter by favorites here
     const displayedMenus = showFavoritesOnly
         ? menus.filter((menu) => isFavorite(menu.restaurant_id || menu.restaurants?.id)) // Handle both flat and nested ID potentially
         : menus

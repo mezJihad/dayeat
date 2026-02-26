@@ -33,7 +33,17 @@ export default function RootLayout({
           {children}
         </main>
         <BottomNav />
-        <Toaster position="top-center" />
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            classNames: {
+              toast: 'bg-white border-yellow-300 shadow-lg text-slate-800',
+              success: 'bg-yellow-50 border-yellow-300 text-yellow-900 font-medium',
+              error: 'bg-red-50 border-red-200 text-red-900 font-medium',
+              info: 'bg-slate-50 border-slate-200 text-slate-800'
+            }
+          }}
+        />
       </body>
     </html>
   );

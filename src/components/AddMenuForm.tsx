@@ -16,6 +16,8 @@ export interface MenuToEdit {
     meal_period: string
     description: string | null
     accepts_reservations: boolean | null
+    is_dine_in: boolean | null
+    is_takeaway: boolean | null
     photo_url: string | null
 }
 
@@ -171,25 +173,63 @@ export function AddMenuForm({ menuToEdit, onSuccess }: AddMenuFormProps) {
                 )}
             </div>
 
-            <div className="flex items-center space-x-2 pt-2 pb-2">
-                <input
-                    type="checkbox"
-                    id="accepts_reservations"
-                    name="accepts_reservations"
-                    value="true"
-                    defaultChecked={isEditing ? (menuToEdit?.accepts_reservations !== false) : true}
-                    className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
-                    disabled={isSubmitting}
-                />
-                <label
-                    htmlFor="accepts_reservations"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                    Accepter les réservations (WhatsApp)
-                </label>
+            <div className="flex items-center justify-between gap-4 pt-2 pb-2 flex-wrap">
+                <div className="flex items-center space-x-2">
+                    <input
+                        type="checkbox"
+                        id="accepts_reservations"
+                        name="accepts_reservations"
+                        value="true"
+                        defaultChecked={isEditing ? (menuToEdit?.accepts_reservations !== false) : true}
+                        className="h-4 w-4 rounded border-gray-300 text-slate-900 focus:ring-slate-900 accent-slate-900 cursor-pointer"
+                        disabled={isSubmitting}
+                    />
+                    <label
+                        htmlFor="accepts_reservations"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        Réservations WhatsApp
+                    </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                    <input
+                        type="checkbox"
+                        id="is_dine_in"
+                        name="is_dine_in"
+                        value="true"
+                        defaultChecked={isEditing ? (menuToEdit?.is_dine_in !== false) : true}
+                        className="h-4 w-4 rounded border-gray-300 text-slate-900 focus:ring-slate-900 accent-slate-900 cursor-pointer"
+                        disabled={isSubmitting}
+                    />
+                    <label
+                        htmlFor="is_dine_in"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        Sur place
+                    </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                    <input
+                        type="checkbox"
+                        id="is_takeaway"
+                        name="is_takeaway"
+                        value="true"
+                        defaultChecked={isEditing ? (menuToEdit?.is_takeaway !== false) : true}
+                        className="h-4 w-4 rounded border-gray-300 text-slate-900 focus:ring-slate-900 accent-slate-900 cursor-pointer"
+                        disabled={isSubmitting}
+                    />
+                    <label
+                        htmlFor="is_takeaway"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        À emporter
+                    </label>
+                </div>
             </div>
 
-            <Button type="submit" className="w-full mt-4 bg-orange-500 hover:bg-orange-600" disabled={isSubmitting}>
+            <Button type="submit" className="w-full mt-4 bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold" disabled={isSubmitting}>
                 {isSubmitting ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : isEditing ? (

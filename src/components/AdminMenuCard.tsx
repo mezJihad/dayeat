@@ -3,6 +3,7 @@
 import { deleteMenu, toggleMenuStatus, republishMenu } from '@/app/actions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -37,6 +38,8 @@ interface AdminMenuCardProps {
         meal_period: string
         created_at: string
         accepts_reservations: boolean | null
+        is_dine_in: boolean | null
+        is_takeaway: boolean | null
     }
     isHistory?: boolean
 }
@@ -108,11 +111,13 @@ export function AdminMenuCard({ menu, isHistory = false }: AdminMenuCardProps) {
                     <div>
                         <div className="flex justify-between items-start">
                             <h3 className="font-semibold text-sm line-clamp-1">{menu.title}</h3>
-                            <span className="font-bold text-sm text-green-600">{menu.price} DH</span>
+                            <Badge variant="secondary" className="shadow-sm font-bold text-sm shrink-0 ml-2">
+                                {menu.price} MAD
+                            </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground mt-1 capitalize">{menu.meal_period}</p>
                         {menu.description && (
-                            <p className="text-xs text-muted-foreground mt-2 line-clamp-2 border-l-2 border-orange-200 pl-2">
+                            <p className="text-xs text-muted-foreground mt-2 line-clamp-2 border-l-2 border-red-200 pl-2">
                                 {menu.description}
                             </p>
                         )}
@@ -143,6 +148,7 @@ export function AdminMenuCard({ menu, isHistory = false }: AdminMenuCardProps) {
                                         <Button
                                             onClick={handleRepublish}
                                             disabled={loading}
+                                            className="bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold"
                                         >
                                             {loading ? "En cours..." : "Republier"}
                                         </Button>
@@ -169,37 +175,35 @@ export function AdminMenuCard({ menu, isHistory = false }: AdminMenuCardProps) {
                             </Button>
                         )}
 
-                        {!isHistory && (
-                            <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-                                <DialogTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        disabled={loading}
-                                        className="h-8 w-8 text-foreground hover:bg-muted"
-                                    >
-                                        <Pencil className="w-3 h-3" />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-                                    <DialogHeader>
-                                        <DialogTitle>Modifier le plat</DialogTitle>
-                                    </DialogHeader>
-                                    <AddMenuForm
-                                        menuToEdit={menu}
-                                        onSuccess={() => setIsEditOpen(false)}
-                                    />
-                                </DialogContent>
-                            </Dialog>
-                        )}
+                        <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+                            <DialogTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    disabled={loading}
+                                    className="h-8 w-8 text-foreground hover:bg-muted"
+                                >
+                                    <Pencil className="w-3 h-3" />
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+                                <DialogHeader>
+                                    <DialogTitle>Modifier le plat</DialogTitle>
+                                </DialogHeader>
+                                <AddMenuForm
+                                    menuToEdit={menu}
+                                    onSuccess={() => setIsEditOpen(false)}
+                                />
+                            </DialogContent>
+                        </Dialog>
 
                         <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
                             <AlertDialogTrigger asChild>
                                 <Button
-                                    variant="destructive"
+                                    variant="outline"
                                     size="icon"
                                     disabled={loading}
-                                    className="h-8 w-8"
+                                    className="h-8 w-8 text-foreground hover:bg-muted"
                                 >
                                     <Trash2 className="w-3 h-3" />
                                 </Button>

@@ -62,12 +62,12 @@ export default function MapUI({ menus }: MapUIProps) {
                             <h3 className="font-bold text-base m-0 mb-1 leading-tight">{r.name}</h3>
                             <p className="text-xs text-muted-foreground m-0 mb-3">{r.address}</p>
                             <div className="space-y-2">
-                                <p className="text-xs font-semibold text-orange-600 border-b pb-1 mb-2">Les menus d'aujourd'hui</p>
+                                <p className="text-xs font-semibold text-red-700 border-b pb-1 mb-2">Les menus d'aujourd'hui</p>
                                 {r.menus.map((m: any) => (
                                     <div key={m.id} className="text-sm border-t pt-2">
                                         <div className="font-medium leading-tight">{m.title}</div>
                                         <div className="flex justify-between items-center mt-1">
-                                            <span className="text-orange-600 font-semibold">{m.price} MAD</span>
+                                            <span className="text-red-700 font-semibold">{m.price} MAD</span>
                                             {m.is_sold_out && <span className="text-xs text-destructive bg-destructive/10 px-1 rounded">(Épuisé)</span>}
                                         </div>
                                     </div>
