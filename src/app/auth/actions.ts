@@ -30,9 +30,14 @@ export async function signup(formData: FormData) {
     const email = formData.get('email') as string
     const password = formData.get('password') as string
 
+    const origin = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+            emailRedirectTo: `${origin}/auth/callback`,
+        }
     })
 
     if (error) {
@@ -62,4 +67,25 @@ export async function resetPassword(formData: FormData) {
     }
 
     return { message: 'Email de réinitialisation envoyé ! Vérifiez votre boîte mail.' }
+}
+
+export async function updatePassword(formData: FormData) {
+    const supabase = await createClient()
+
+    const password = formData.get('password') as string
+
+    if (!password || password.length < 6) {
+        return { error: "Le mot de passe doit faire au moins 6 caractères." }
+    }
+
+    const { error } = await supabase.auth.updateUser({
+        password: password
+    })
+
+    if (error) {
+        return { error: "Erreur lors de la mise à jour du mot de passe." }
+    }
+
+    revalidatePath('/', 'layout')
+    redirect('/admin')
 }
