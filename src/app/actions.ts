@@ -415,3 +415,24 @@ export async function republishMenu(menuId: string) {
     revalidatePath('/')
     return { success: true }
 }
+
+export async function deleteRestaurantAccount() {
+    const supabase = await createClient()
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Unauthorized')
+
+    // Call the secure RPC function we instructed the user to create
+    const { error } = await supabase.rpc('delete_user')
+
+    if (error) {
+        console.error('Error deleting user account:', error)
+        throw new Error('Erreur lors de la suppression du compte: ' + error.message)
+    }
+
+    // Sign out to clear local session
+    await supabase.auth.signOut()
+
+    // Redirect to login page
+    redirect('/login')
+}

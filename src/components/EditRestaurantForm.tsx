@@ -79,7 +79,7 @@ export function EditRestaurantForm({ restaurant, onSuccess }: EditRestaurantForm
                 </div>
             )}
 
-            <Button type="submit" className="w-full mt-4 bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold shadow-md" disabled={isSubmitting}>
+            <Button type="submit" className="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold shadow-md" disabled={isSubmitting}>
                 {isSubmitting ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (

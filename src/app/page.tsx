@@ -1,6 +1,7 @@
 import { getTodayMenus } from './actions'
 import { FilterBar } from '@/components/FilterBar'
 import { FeedToggle } from '@/components/FeedToggle'
+import { Footer } from '@/components/Footer'
 import Image from 'next/image'
 
 interface HomeProps {
@@ -69,6 +70,8 @@ export default async function Home({ searchParams }: HomeProps) {
           />
         </div>
       )}
+
+      <Footer />
     </div>
   )
 }

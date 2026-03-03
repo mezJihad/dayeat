@@ -1,9 +1,8 @@
 import { getRestaurant, createRestaurant, getRestaurantMenus } from '@/app/actions'
-import { SignOutButton } from '@/components/SignOutButton'
+import { ProfileMenu } from '@/components/ProfileMenu'
 import { LocationPickerField } from '@/components/LocationPickerField'
 import { AdminMenuCard } from '@/components/AdminMenuCard'
 import { AddMenuForm } from '@/components/AddMenuForm'
-import { RestaurantSettingsDialog } from '@/components/RestaurantSettingsDialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -27,7 +26,9 @@ export default async function AdminPage() {
             <div className="container mx-auto p-4 max-w-md pb-24">
                 <div className="flex justify-between items-start mb-6">
                     <h1 className="text-2xl font-bold">Bienvenue sur DayEat ! 🚀</h1>
-                    <SignOutButton />
+                    <div className="pt-1">
+                        <ProfileMenu restaurant={null} />
+                    </div>
                 </div>
 
                 <Card className="border-red-200 bg-red-50">
@@ -93,22 +94,16 @@ export default async function AdminPage() {
 
     return (
         <div className="container mx-auto p-4 max-w-md pb-24">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold tracking-tight">Espace Pro 👨‍🍳</h1>
-                <SignOutButton />
-            </div>
-
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between mb-8 shadow-sm">
-                <div className="flex items-center gap-3 overflow-hidden">
-                    <div className="bg-yellow-50 dark:bg-yellow-900/30 p-2.5 rounded-full shrink-0 border border-yellow-100">
-                        <Store className="w-5 h-5 text-yellow-600 dark:text-yellow-500" />
-                    </div>
-                    <div className="flex flex-col min-w-0 pr-2">
-                        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Mon Restaurant</span>
-                        <h2 className="text-lg font-bold truncate text-slate-800 dark:text-slate-100 leading-none">{restaurant.name}</h2>
+            <div className="flex items-center justify-between mb-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-2 shadow-sm">
+                <div className="flex items-center gap-2 overflow-hidden w-full pl-1">
+                    <Store className="w-5 h-5 text-red-700 dark:text-red-500 shrink-0" />
+                    <div className="flex flex-col min-w-0 flex-1 justify-center">
+                        <h2 className="text-base font-bold truncate text-slate-800 dark:text-slate-100">{restaurant.name}</h2>
                     </div>
                 </div>
-                <RestaurantSettingsDialog restaurant={restaurant} />
+                <div className="shrink-0 ml-2 pl-2 border-l border-slate-100 dark:border-slate-800">
+                    <ProfileMenu restaurant={restaurant} />
+                </div>
             </div>
 
             <Card className="mb-8">

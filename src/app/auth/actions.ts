@@ -29,6 +29,11 @@ export async function signup(formData: FormData) {
 
     const email = formData.get('email') as string
     const password = formData.get('password') as string
+    const terms = formData.get('terms') as string
+
+    if (terms !== 'on') {
+        return { error: "Vous devez accepter les conditions d'utilisation." }
+    }
 
     const origin = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 

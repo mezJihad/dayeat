@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { BottomNav } from "@/components/BottomNav";
+import { CookieConsent } from "@/components/CookieConsent";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -44,6 +45,7 @@ export default function RootLayout({
             }
           }}
         />
+        <CookieConsent />
       </body>
     </html>
   );

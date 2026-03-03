@@ -173,6 +173,10 @@ export interface Database {
                     is_takeaway: boolean | null
                 }[]
             }
+            delete_user: {
+                Args: Record<PropertyKey, never>
+                Returns: undefined
+            }
         }
         Enums: {
             meal_period: "Petit-Dej" | "Dejeuner" | "Gouter" | "Diner" | "AntiGaspi"

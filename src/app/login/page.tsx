@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import { useState, useTransition } from 'react'
 import { Loader2 } from 'lucide-react'
 
@@ -65,6 +66,18 @@ export default function LoginPage() {
                             </div>
                             <Input id="password" name="password" type="password" required />
                         </div>
+
+                        {!isLoginMode && (
+                            <div className="flex items-start space-x-2 py-2">
+                                <Checkbox id="terms" name="terms" required />
+                                <label
+                                    htmlFor="terms"
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                    J'accepte les <Link href="/terms" className="underline hover:text-primary" target="_blank">conditions d'utilisation</Link>
+                                </label>
+                            </div>
+                        )}
 
                         {error && (
                             <div className="text-sm text-red-500 font-medium">
