@@ -4,7 +4,7 @@ import { useState, useRef } from 'react'
 import { addMenuItem, editMenuItem } from '@/app/actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { PlusCircle, Loader2, Save } from 'lucide-react'
 import imageCompression from 'browser-image-compression'
@@ -116,21 +116,23 @@ export function AddMenuForm({ menuToEdit, onSuccess }: AddMenuFormProps) {
                 <label htmlFor="meal_period" className="text-sm font-medium">
                     Service
                 </label>
-                <div className="relative">
-                    <Select
-                        id="meal_period"
-                        name="meal_period"
-                        required
-                        defaultValue={menuToEdit?.meal_period || "Dejeuner"}
-                        disabled={isSubmitting}
-                    >
-                        <option value="Petit-Dej">Petit-Déjeuner</option>
-                        <option value="Dejeuner">Déjeuner</option>
-                        <option value="Gouter">Goûter</option>
-                        <option value="Diner">Dîner</option>
-                        <option value="AntiGaspi">Panier Anti-Gaspi</option>
-                    </Select>
-                </div>
+                <Select
+                    name="meal_period"
+                    required
+                    defaultValue={menuToEdit?.meal_period || "Dejeuner"}
+                    disabled={isSubmitting}
+                >
+                    <SelectTrigger className="w-full h-10 rounded-md border-input bg-background focus:ring-slate-900">
+                        <SelectValue placeholder="Choisir un service" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="Petit-Dej">Petit-Déjeuner</SelectItem>
+                        <SelectItem value="Dejeuner">Déjeuner</SelectItem>
+                        <SelectItem value="Gouter">Goûter</SelectItem>
+                        <SelectItem value="Diner">Dîner</SelectItem>
+                        <SelectItem value="AntiGaspi">Panier Anti-Gaspi</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
 
             <div className="space-y-2">

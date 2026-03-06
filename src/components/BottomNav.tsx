@@ -1,18 +1,60 @@
 'use client'
 
 import Link from 'next/link'
-import { Home, ChefHat, Heart, Coffee, Utensils, IceCream, Moon, Leaf } from 'lucide-react'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { Home, ChefHat, Heart, Coffee, Utensils, IceCream, Moon, Leaf, ArrowDownAZ, List, Map, MapPin } from 'lucide-react'
+import { usePathname, useSearchParams, useRouter } from 'next/navigation'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { useState } from 'react'
 
 export function BottomNav() {
     const pathname = usePathname()
     const searchParams = useSearchParams()
+    const router = useRouter()
+    const [loadingLocation, setLoadingLocation] = useState(false)
 
     const isActive = (path: string) => pathname === path
     const activeCategory = searchParams.get('category') || 'all'
+    const view = searchParams.get('view') || 'list'
+    const sort = searchParams.get('sort') || 'default'
 
-    // Define categories to mimic FilterBar
+    const updateParams = (newParams: Record<string, string | null>) => {
+        const params = new URLSearchParams(searchParams.toString())
+        Object.entries(newParams).forEach(([key, value]) => {
+            if (value) params.set(key, value)
+            else params.delete(key)
+        })
+        router.push(`/?${params.toString()}`)
+    }
+
+    const handleLocationClick = () => {
+        if (!navigator.geolocation) return alert("La géolocalisation n'est pas supportée")
+        setLoadingLocation(true)
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude: lat, longitude: long } = pos.coords
+                localStorage.setItem('user_lat', lat.toString())
+                localStorage.setItem('user_long', long.toString())
+                updateParams({ lat: lat.toString(), long: long.toString(), sort: 'dist_asc' })
+                setLoadingLocation(false)
+            },
+            () => {
+                alert("Erreur de localisation")
+                setLoadingLocation(false)
+            }
+        )
+    }
+
+    const clearLocation = () => {
+        localStorage.removeItem('user_lat')
+        localStorage.removeItem('user_long')
+        updateParams({ lat: null, long: null, sort: sort === 'dist_asc' ? 'default' : sort })
+    }
+
+    const hasLocation = searchParams.has('lat') && searchParams.has('long')
+
+    // Categories
     const CATEGORIES = [
         { value: 'all', label: 'Tous', icon: Home },
         { value: 'Petit-Dej', label: 'Matin', icon: Coffee },
@@ -27,7 +69,6 @@ export function BottomNav() {
             {/* Desktop Brand Header */}
             <div className="hidden md:flex flex-col items-center justify-center gap-3 px-2 pt-0 pb-4 mb-2">
                 <div className="relative p-2 bg-white rounded-full shadow-md shrink-0">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/logo.png" alt="DayEat Logo" width={90} height={90} className="object-cover rounded-full" />
                 </div>
             </div>
@@ -37,7 +78,8 @@ export function BottomNav() {
                     href="/"
                     className={cn(
                         "flex flex-col md:flex-row items-center md:justify-start rounded-lg py-2 md:py-3 md:px-4 text-xs md:text-sm font-medium transition-colors hover:bg-muted",
-                        isActive('/') && !searchParams.get('favorites') ? "text-red-700 bg-red-50/50 dark:bg-red-950/20 md:bg-red-50 dark:md:bg-red-950/30" : "text-muted-foreground"
+                        isActive('/') && !searchParams.get('favorites') ? "text-red-700 bg-red-50/50" : "text-muted-foreground",
+                        "md:hidden" // Hidden on Desktop sidebar as it's in the Header
                     )}
                 >
                     <Home className="mb-1 md:mb-0 md:mr-3 h-5 w-5" />
@@ -47,7 +89,8 @@ export function BottomNav() {
                     href="/?favorites=true"
                     className={cn(
                         "flex flex-col md:flex-row items-center md:justify-start rounded-lg py-2 md:py-3 md:px-4 text-xs md:text-sm font-medium transition-colors hover:bg-muted",
-                        searchParams.get('favorites') === 'true' ? "text-red-700 bg-red-50/50 dark:bg-red-950/20 md:bg-red-50 dark:md:bg-red-950/30" : "text-muted-foreground"
+                        searchParams.get('favorites') === 'true' ? "text-red-700 bg-red-50/50" : "text-muted-foreground",
+                        "md:hidden" // Hidden on Desktop sidebar
                     )}
                 >
                     <Heart className="mb-1 md:mb-0 md:mr-3 h-5 w-5" />
@@ -57,7 +100,8 @@ export function BottomNav() {
                     href="/admin"
                     className={cn(
                         "flex flex-col md:flex-row items-center md:justify-start rounded-lg py-2 md:py-3 md:px-4 text-xs md:text-sm font-medium transition-colors hover:bg-muted",
-                        isActive('/admin') ? "text-red-700 bg-red-50/50 dark:bg-red-950/20 md:bg-red-50 dark:md:bg-red-950/30" : "text-muted-foreground"
+                        isActive('/admin') ? "text-red-700 bg-red-50/50" : "text-muted-foreground",
+                        "md:hidden" // Hidden on Desktop sidebar
                     )}
                 >
                     <ChefHat className="mb-1 md:mb-0 md:mr-3 h-5 w-5" />
@@ -65,44 +109,112 @@ export function BottomNav() {
                 </Link>
             </div>
 
-            {/* Desktop Filters (Sidebar only) */}
-            <div className="hidden md:flex md:flex-col mt-6 pt-6 border-t px-2 gap-1">
-                <span className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                    Catégories
-                </span>
-                {CATEGORIES.map((cat) => {
-                    const Icon = cat.icon
-                    const isSelected = activeCategory === cat.value && !searchParams.get('favorites')
-
-                    // Preserve existing location/sort params when filtering
-                    const currentParams = new URLSearchParams(searchParams.toString())
-                    if (cat.value === 'all') {
-                        currentParams.delete('category')
-                    } else {
-                        currentParams.set('category', cat.value)
-                    }
-                    currentParams.delete('favorites') // Clearing favorites when picking a category
-
-                    return (
-                        <Link
-                            key={cat.value}
-                            href={`/?${currentParams.toString()}`}
-                            className={cn(
-                                "flex items-center justify-start rounded-lg py-2.5 px-4 text-sm font-medium transition-colors hover:bg-muted",
-                                isSelected ? "text-slate-900 bg-yellow-500 hover:bg-yellow-600 shadow-sm font-bold" : "text-slate-600 hover:text-slate-900"
-                            )}
+            {/* Desktop Tools Section */}
+            <div className="hidden md:flex flex-col gap-6 px-2">
+                {/* 1. Location Tool */}
+                <div className="flex flex-col gap-2">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider px-2">Localisation</span>
+                    {hasLocation ? (
+                        <Button
+                            variant="outline"
+                            onClick={clearLocation}
+                            className="w-full justify-start h-9 rounded-xl bg-yellow-500 text-slate-900 border-none hover:bg-yellow-600 text-xs shadow-md font-bold"
                         >
-                            <Icon className="mr-3 h-4 w-4" />
-                            <span>{cat.label}</span>
-                        </Link>
-                    )
-                })}
+                            <MapPin className="mr-2 h-4 w-4 fill-current" />
+                            Proche de moi (Activé)
+                        </Button>
+                    ) : (
+                        <Button
+                            variant="outline"
+                            onClick={handleLocationClick}
+                            disabled={loadingLocation}
+                            className="w-full justify-start h-9 rounded-xl bg-background border-slate-200 shadow-sm hover:shadow-md transition-all text-xs"
+                        >
+                            <MapPin className="mr-2 h-4 w-4 text-slate-400" />
+                            {loadingLocation ? 'Recherche...' : 'Autour de moi'}
+                        </Button>
+                    )}
+                </div>
+
+                {/* 2. Sorting Tool */}
+                <div className="flex flex-col gap-2">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider px-2">Trier par</span>
+                    <Select value={sort} onValueChange={(v) => updateParams({ sort: v === 'default' ? null : v })}>
+                        <SelectTrigger className="w-full h-9 rounded-xl border-slate-200 shadow-sm text-xs bg-background focus:ring-red-500">
+                            <div className="flex items-center gap-2">
+                                <ArrowDownAZ className="h-4 w-4 text-slate-400" />
+                                <SelectValue placeholder="Pertinence" />
+                            </div>
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="default">Pertinence</SelectItem>
+                            {hasLocation && <SelectItem value="dist_asc">Le plus proche</SelectItem>}
+                            <SelectItem value="price_asc">Prix croissant</SelectItem>
+                            <SelectItem value="price_desc">Prix décroissant</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                {/* 3. View Toggle */}
+                <div className="flex flex-col gap-2">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider px-2">Affichage</span>
+                    <div className="grid grid-cols-2 bg-muted/50 p-1 rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => updateParams({ view: 'list' })}
+                            className={cn("h-8 rounded-lg text-xs font-semibold transition-all", view === 'list' ? "bg-yellow-500 text-slate-900 shadow-sm" : "text-muted-foreground hover:bg-slate-200")}
+                        >
+                            <List className="h-3.5 w-3.5 mr-1.5" />
+                            Liste
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => updateParams({ view: 'map' })}
+                            className={cn("h-8 rounded-lg text-xs font-semibold transition-all", view === 'map' ? "bg-yellow-500 text-slate-900 shadow-sm" : "text-muted-foreground hover:bg-slate-200")}
+                        >
+                            <Map className="h-3.5 w-3.5 mr-1.5" />
+                            Carte
+                        </Button>
+                    </div>
+                </div>
+
+                {/* 4. Categories */}
+                <div className="flex flex-col gap-2">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider px-2">Catégories</span>
+                    <div className="flex flex-col gap-1">
+                        {CATEGORIES.map((cat) => {
+                            const Icon = cat.icon
+                            const isSelected = activeCategory === cat.value && !searchParams.get('favorites')
+                            const currentParams = new URLSearchParams(searchParams.toString())
+                            if (cat.value === 'all') currentParams.delete('category')
+                            else currentParams.set('category', cat.value)
+                            currentParams.delete('favorites')
+
+                            return (
+                                <Link
+                                    key={cat.value}
+                                    href={`/?${currentParams.toString()}`}
+                                    className={cn(
+                                        "flex items-center justify-start rounded-xl py-2 px-4 text-sm transition-all duration-200",
+                                        isSelected ? "text-slate-900 bg-yellow-500 shadow-md font-bold scale-[1.02]" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                                    )}
+                                >
+                                    <Icon className="mr-3 h-4 w-4" />
+                                    <span>{cat.label}</span>
+                                </Link>
+                            )
+                        })}
+                    </div>
+                </div>
             </div>
 
             {/* Desktop Footer Info */}
-            <div className="hidden md:block mt-auto pt-4 border-t text-xs text-muted-foreground text-center">
+            <div className="hidden md:block mt-auto pt-4 text-[10px] text-muted-foreground text-center opacity-60">
                 &copy; {new Date().getFullYear()} DayEat
             </div>
         </div>
     )
 }
+

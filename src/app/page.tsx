@@ -31,41 +31,24 @@ export default async function Home({ searchParams }: HomeProps) {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-2xl md:max-w-6xl md:py-8">
-      <header className="mb-6 pb-4 border-b border-slate-100 dark:border-slate-800 md:flex md:justify-between md:items-center">
-        <div className="flex items-center gap-4">
-          <div className="relative p-1 bg-white rounded-full shadow-sm shrink-0 md:hidden">
-            <Image
-              src="/logo.png"
-              alt="DayEat Logo"
-              width={65}
-              height={65}
-              className="object-contain rounded-full"
-              priority
-            />
-          </div>
-          <h1 className="text-[#27251F] dark:text-white text-sm sm:text-base md:text-2xl lg:text-3xl font-bold leading-snug md:leading-tight">
-            Les meilleurs <span className="text-red-700 font-bold">menus du jour</span>
-            <br className="md:hidden" />
-            <span className="hidden md:inline"> </span>
-            autour de vous
-          </h1>
-        </div>
+    <div className="container mx-auto p-4 max-w-2xl md:max-w-6xl md:py-8 flex-1 flex flex-col">
+      {/* Mobile Title */}
+      <h1 className="md:hidden text-[#27251F] dark:text-white text-base font-bold mb-6 pb-2 border-b border-slate-100">
+        Les meilleurs <span className="text-red-700">menus du jour</span>
+      </h1>
 
-        {/* Desktop CTA Restaurateur */}
-        <div className="hidden md:block">
-          <Link
-            href="/admin"
-            className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-900 text-slate-50 hover:bg-slate-900/90 h-10 px-6 py-2 rounded-full shadow-md"
-          >
-            <Store className="mr-2 h-4 w-4" />
-            Vous &ecirc;tes restaurateur ?
-          </Link>
-        </div>
-      </header>
+      {/* Desktop Hero Title */}
+      <div className="hidden md:flex flex-col items-center justify-center mb-12 text-center pt-4">
+        <h1 className="text-4xl lg:text-5xl font-extrabold text-[#27251F] dark:text-white tracking-tight">
+          Les meilleurs <span className="text-red-700">menus du jour</span>
+        </h1>
+        <p className="mt-4 text-muted-foreground text-lg max-w-lg">
+          Découvrez les pépites culinaires disponibles près de chez vous aujourd&apos;hui.
+        </p>
+      </div>
 
       {menus.length === 0 ? (
-        <div className="text-center py-20 text-muted-foreground">
+        <div className="flex-1 flex flex-col justify-center text-center py-20 text-muted-foreground">
           <p>Aucun menu disponible pour le moment.</p>
           <p className="text-sm mt-2">Revenez plus tard ! 🕒</p>
         </div>
@@ -85,7 +68,7 @@ export default async function Home({ searchParams }: HomeProps) {
         </div>
       )}
 
-      <Footer />
+      <Footer className="mt-auto" />
     </div>
   )
 }

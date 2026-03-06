@@ -26,7 +26,7 @@ export default async function AdminPage() {
             <div className="container mx-auto p-4 max-w-md pb-24">
                 <div className="flex justify-between items-start mb-6">
                     <h1 className="text-2xl font-bold">Bienvenue sur DayEat ! 🚀</h1>
-                    <div className="pt-1">
+                    <div className="pt-1 md:hidden">
                         <ProfileMenu restaurant={null} />
                     </div>
                 </div>
@@ -94,7 +94,7 @@ export default async function AdminPage() {
 
     return (
         <div className="container mx-auto p-4 max-w-md pb-24">
-            <div className="flex items-center justify-between mb-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-2 shadow-sm">
+            <div className="flex items-center justify-between mb-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-2 shadow-sm md:hidden">
                 <div className="flex items-center gap-2 overflow-hidden w-full pl-1">
                     <Store className="w-5 h-5 text-red-700 dark:text-red-500 shrink-0" />
                     <div className="flex flex-col min-w-0 flex-1 justify-center">

@@ -37,21 +37,24 @@ export function FilterBar() {
   useEffect(() => {
     setCategory(searchParams.get('category') || 'all')
     setSort(searchParams.get('sort') || 'default')
+  }, [searchParams])
 
-    // Restore location from localStorage if missing in URL
+  // Restore location from localStorage ONLY on initial mount
+  useEffect(() => {
     const lat = searchParams.get('lat')
     const long = searchParams.get('long')
     const savedLat = localStorage.getItem('user_lat')
     const savedLong = localStorage.getItem('user_long')
 
     if (!lat && !long && savedLat && savedLong) {
-      const params = new URLSearchParams(searchParams.toString())
+      const params = new URLSearchParams(window.location.search)
       params.set('lat', savedLat)
       params.set('long', savedLong)
-      params.set('sort', searchParams.get('sort') || 'dist_asc')
+      params.set('sort', 'dist_asc')
       router.push(`/?${params.toString()}`)
     }
-  }, [searchParams, router])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleCategoryChange = (value: string) => {
     setCategory(value)
@@ -147,7 +150,7 @@ export function FilterBar() {
               variant="outline"
               size="sm"
               onClick={clearLocation}
-              className="whitespace-nowrap bg-green-50 text-green-700 border-green-200 hover:bg-green-100 rounded-full h-8 text-xs shadow-sm"
+              className="whitespace-nowrap bg-yellow-500 text-slate-900 border-none hover:bg-yellow-600 rounded-full h-8 text-xs shadow-md font-bold"
             >
               <MapPin className="mr-1.5 h-3.5 w-3.5 fill-current" />
               Autour de moi
