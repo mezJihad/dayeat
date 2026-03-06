@@ -25,7 +25,7 @@ export function BottomNav() {
     return (
         <div className="fixed bottom-0 left-0 right-0 z-50 border-t md:border-t-0 md:border-r bg-background p-2 pb-4 md:p-4 md:w-64 md:top-0 md:h-screen md:flex md:flex-col shadow-[0_-1px_3px_rgba(0,0,0,0.1)] md:shadow-[1px_0_3px_rgba(0,0,0,0.05)]">
             {/* Desktop Brand Header */}
-            <div className="hidden md:flex flex-col items-center justify-center gap-3 px-2 py-4 mb-2 mt-2">
+            <div className="hidden md:flex flex-col items-center justify-center gap-3 px-2 pt-0 pb-4 mb-2">
                 <div className="relative p-2 bg-white rounded-full shadow-md shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/logo.png" alt="DayEat Logo" width={90} height={90} className="object-cover rounded-full" />

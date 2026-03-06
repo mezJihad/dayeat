@@ -44,7 +44,7 @@ export default async function Home({ searchParams }: HomeProps) {
               priority
             />
           </div>
-          <h1 className="text-slate-600 dark:text-slate-400 text-sm sm:text-base md:text-2xl lg:text-3xl font-medium leading-snug md:leading-tight">
+          <h1 className="text-[#27251F] dark:text-white text-sm sm:text-base md:text-2xl lg:text-3xl font-bold leading-snug md:leading-tight">
             Les meilleurs <span className="text-red-700 font-bold">menus du jour</span>
             <br className="md:hidden" />
             <span className="hidden md:inline"> </span>

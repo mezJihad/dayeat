@@ -125,7 +125,7 @@ export function FilterBar() {
       </div>
 
       {/* Sorting & Location Container */}
-      <div className="flex flex-wrap items-center justify-between md:justify-center gap-3 px-1 md:px-0">
+      <div className="flex flex-wrap items-center justify-between md:justify-start gap-3 px-1 md:px-0">
         <Select value={sort} onValueChange={(value) => handleSortChange(value)}>
           <SelectTrigger className="w-[130px] md:w-auto h-8 rounded-full bg-background/50 border shadow-sm text-xs">
             <div className="flex items-center gap-1.5">
@@ -141,7 +141,7 @@ export function FilterBar() {
           </SelectContent>
         </Select>
 
-        <div className="flex items-center">
+        <div className="flex items-center md:hidden">
           {hasLocation ? (
             <Button
               variant="outline"
