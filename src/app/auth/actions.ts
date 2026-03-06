@@ -49,6 +49,10 @@ export async function signup(formData: FormData) {
         return { error: error.message }
     }
 
+    if (data.user?.identities?.length === 0) {
+        return { error: 'Cet e-mail est déjà utilisé. Veuillez vous connecter.' }
+    }
+
     if (data.user && !data.session) {
         return { message: 'Compte créé ! Veuillez vérifier votre email pour confirmer.' }
     }

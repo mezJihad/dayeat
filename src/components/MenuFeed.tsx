@@ -41,7 +41,7 @@ export function MenuFeed({ menus }: MenuFeedProps) {
     }
 
     return (
-        <div className="grid grid-cols-1 gap-6 justify-items-center">
+        <div className="flex flex-col items-center gap-4 sm:gap-6 w-full">
             {displayedMenus.map((menu) => (
                 <MenuCard
                     key={menu.id}

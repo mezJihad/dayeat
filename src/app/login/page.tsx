@@ -4,6 +4,15 @@ import { login, signup } from '@/app/auth/actions'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+} from "@/components/ui/dialog"
+import { TermsOfUseContent } from '@/components/TermsOfUseContent'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useState, useTransition } from 'react'
@@ -14,6 +23,8 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null)
     const [message, setMessage] = useState<string | null>(null)
     const [isLoginMode, setIsLoginMode] = useState(true)
+    const [isTermsOpen, setIsTermsOpen] = useState(false)
+    const [termsAccepted, setTermsAccepted] = useState(false)
 
     async function handleSubmit(formData: FormData) {
         setError(null)
@@ -69,12 +80,57 @@ export default function LoginPage() {
 
                         {!isLoginMode && (
                             <div className="flex items-start space-x-2 py-2">
-                                <Checkbox id="terms" name="terms" required />
+                                <Checkbox
+                                    id="terms"
+                                    name="terms"
+                                    required
+                                    checked={termsAccepted}
+                                    onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                                />
                                 <label
                                     htmlFor="terms"
                                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
-                                    J'accepte les <Link href="/terms" className="underline hover:text-primary" target="_blank">conditions d'utilisation</Link>
+                                    J&apos;accepte les{' '}
+                                    <Dialog open={isTermsOpen} onOpenChange={setIsTermsOpen}>
+                                        <DialogTrigger asChild>
+                                            <button
+                                                type="button"
+                                                className="underline hover:text-primary outline-none"
+                                            >
+                                                conditions d&apos;utilisation
+                                            </button>
+                                        </DialogTrigger>
+                                        <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden flex flex-col">
+                                            <DialogHeader className="px-6 py-4 border-b">
+                                                <DialogTitle className="text-2xl">Conditions G&eacute;n&eacute;rales d&apos;Utilisation</DialogTitle>
+                                            </DialogHeader>
+                                            <div className="flex-1 overflow-y-auto px-6 py-4">
+                                                <TermsOfUseContent />
+                                            </div>
+                                            <DialogFooter className="px-6 py-4 border-t bg-muted/50 sm:justify-between">
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    onClick={() => {
+                                                        setTermsAccepted(false);
+                                                        setIsTermsOpen(false);
+                                                    }}
+                                                >
+                                                    Refuser
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setTermsAccepted(true);
+                                                        setIsTermsOpen(false);
+                                                    }}
+                                                >
+                                                    Accepter
+                                                </Button>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
                                 </label>
                             </div>
                         )}

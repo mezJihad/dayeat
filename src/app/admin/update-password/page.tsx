@@ -1,6 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+export const dynamic = 'force-dynamic'
+
+import { useState, Suspense } from 'react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,6 +10,14 @@ import { updatePassword } from '@/app/auth/actions'
 import { Lock } from 'lucide-react'
 
 export default function UpdatePasswordPage() {
+    return (
+        <Suspense fallback={<div className="container mx-auto p-4 pt-20 text-center">Chargement...</div>}>
+            <UpdatePasswordForm />
+        </Suspense>
+    )
+}
+
+function UpdatePasswordForm() {
     const [error, setError] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(false)
 

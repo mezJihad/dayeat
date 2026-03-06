@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Select } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { MapPin, ArrowDownAZ } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
@@ -22,11 +22,6 @@ export function FilterBar() {
   const [sort, setSort] = useState(searchParams.get('sort') || 'default')
   const [loadingLocation, setLoadingLocation] = useState(false)
 
-  useEffect(() => {
-    setCategory(searchParams.get('category') || 'all')
-    setSort(searchParams.get('sort') || 'default')
-  }, [searchParams])
-
   const updateParams = (newParams: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString())
     Object.entries(newParams).forEach(([key, value]) => {
@@ -38,6 +33,25 @@ export function FilterBar() {
     })
     router.push(`/?${params.toString()}`)
   }
+
+  useEffect(() => {
+    setCategory(searchParams.get('category') || 'all')
+    setSort(searchParams.get('sort') || 'default')
+
+    // Restore location from localStorage if missing in URL
+    const lat = searchParams.get('lat')
+    const long = searchParams.get('long')
+    const savedLat = localStorage.getItem('user_lat')
+    const savedLong = localStorage.getItem('user_long')
+
+    if (!lat && !long && savedLat && savedLong) {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('lat', savedLat)
+      params.set('long', savedLong)
+      params.set('sort', searchParams.get('sort') || 'dist_asc')
+      router.push(`/?${params.toString()}`)
+    }
+  }, [searchParams, router])
 
   const handleCategoryChange = (value: string) => {
     setCategory(value)
@@ -59,6 +73,11 @@ export function FilterBar() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords
+
+        // Save to localStorage for persistence
+        localStorage.setItem('user_lat', latitude.toString())
+        localStorage.setItem('user_long', longitude.toString())
+
         updateParams({
           lat: latitude.toString(),
           long: longitude.toString(),
@@ -75,6 +94,9 @@ export function FilterBar() {
   }
 
   const clearLocation = () => {
+    localStorage.removeItem('user_lat')
+    localStorage.removeItem('user_long')
+
     updateParams({
       lat: null,
       long: null,
@@ -85,9 +107,9 @@ export function FilterBar() {
   const hasLocation = searchParams.has('lat') && searchParams.has('long')
 
   return (
-    <div className="flex flex-col gap-4 mb-6">
+    <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-4">
       {/* Horizontal scrolling Categories */}
-      <div className="flex overflow-x-auto gap-2 pb-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="flex overflow-x-auto gap-2 pb-2 md:pb-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] md:hidden">
         {CATEGORIES.map((cat) => (
           <button
             key={cat.value}
@@ -103,20 +125,21 @@ export function FilterBar() {
       </div>
 
       {/* Sorting & Location Container */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-1 mt-1">
-        <div className="flex items-center gap-1.5 text-muted-foreground mr-auto bg-background/50 rounded-full px-3 py-1.5 border hover:bg-muted transition-colors">
-          <ArrowDownAZ className="h-4 w-4 shrink-0" />
-          <select
-            value={sort}
-            onChange={(e) => handleSortChange(e.target.value)}
-            className="bg-transparent border-none text-sm font-medium focus:ring-0 cursor-pointer outline-none w-full"
-          >
-            <option value="default">Pertinence</option>
-            {hasLocation && <option value="dist_asc">Plus proche</option>}
-            <option value="price_asc">Prix: Croissant</option>
-            <option value="price_desc">Prix: Décroissant</option>
-          </select>
-        </div>
+      <div className="flex flex-wrap items-center justify-between md:justify-center gap-3 px-1 md:px-0">
+        <Select value={sort} onValueChange={(value) => handleSortChange(value)}>
+          <SelectTrigger className="w-[130px] md:w-auto h-8 rounded-full bg-background/50 border shadow-sm text-xs">
+            <div className="flex items-center gap-1.5">
+              <ArrowDownAZ className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+              <SelectValue placeholder="Trier par" />
+            </div>
+          </SelectTrigger>
+          <SelectContent position="popper" sideOffset={4}>
+            <SelectItem value="default">Pertinence</SelectItem>
+            {hasLocation && <SelectItem value="dist_asc">Plus proche</SelectItem>}
+            <SelectItem value="price_asc">Prix: Croissant</SelectItem>
+            <SelectItem value="price_desc">Prix: Décroissant</SelectItem>
+          </SelectContent>
+        </Select>
 
         <div className="flex items-center">
           {hasLocation ? (
@@ -124,9 +147,9 @@ export function FilterBar() {
               variant="outline"
               size="sm"
               onClick={clearLocation}
-              className="whitespace-nowrap bg-green-50 text-green-700 border-green-200 hover:bg-green-100 rounded-full h-9 shadow-sm"
+              className="whitespace-nowrap bg-green-50 text-green-700 border-green-200 hover:bg-green-100 rounded-full h-8 text-xs shadow-sm"
             >
-              <MapPin className="mr-2 h-4 w-4 fill-current" />
+              <MapPin className="mr-1.5 h-3.5 w-3.5 fill-current" />
               Autour de moi
             </Button>
           ) : (
@@ -135,9 +158,9 @@ export function FilterBar() {
               size="sm"
               onClick={handleLocationClick}
               disabled={loadingLocation}
-              className="whitespace-nowrap rounded-full h-9 bg-background shadow-sm hover:shadow transition-all"
+              className="whitespace-nowrap rounded-full h-8 text-xs bg-background shadow-sm hover:shadow transition-all"
             >
-              <MapPin className="mr-2 h-4 w-4" />
+              <MapPin className="mr-1.5 h-3.5 w-3.5" />
               {loadingLocation ? 'Recherche...' : 'Autour de moi'}
             </Button>
           )}

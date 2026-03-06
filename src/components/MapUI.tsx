@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
+import { MenuDetailsModal } from './MenuDetailsModal'
 
 // Fix Leaflet's default icon path issue with webpack
 const DefaultIcon = L.icon({
@@ -49,7 +49,7 @@ export default function MapUI({ menus }: MapUIProps) {
         <MapContainer
             center={center}
             zoom={13}
-            style={{ height: '600px', width: '100%', borderRadius: '0.5rem', zIndex: 0 }}
+            style={{ width: '100%', minHeight: '500px', height: 'calc(100vh - 250px)', borderRadius: '0.5rem', zIndex: 0 }}
         >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -62,15 +62,17 @@ export default function MapUI({ menus }: MapUIProps) {
                             <h3 className="font-bold text-base m-0 mb-1 leading-tight">{r.name}</h3>
                             <p className="text-xs text-muted-foreground m-0 mb-3">{r.address}</p>
                             <div className="space-y-2">
-                                <p className="text-xs font-semibold text-red-700 border-b pb-1 mb-2">Les menus d'aujourd'hui</p>
+                                <p className="text-xs font-semibold text-red-700 border-b pb-1 mb-2">Les menus d&apos;aujourd&apos;hui</p>
                                 {r.menus.map((m: any) => (
-                                    <div key={m.id} className="text-sm border-t pt-2">
-                                        <div className="font-medium leading-tight">{m.title}</div>
-                                        <div className="flex justify-between items-center mt-1">
-                                            <span className="text-red-700 font-semibold">{m.price} MAD</span>
-                                            {m.is_sold_out && <span className="text-xs text-destructive bg-destructive/10 px-1 rounded">(Épuisé)</span>}
+                                    <MenuDetailsModal key={m.id} item={m}>
+                                        <div className="text-sm border-t pt-2 cursor-pointer hover:bg-slate-50 transition-colors p-1 -mx-1 rounded">
+                                            <div className="font-medium leading-tight group-hover:text-red-700 transition-colors">{m.title}</div>
+                                            <div className="flex justify-between items-center mt-1">
+                                                <span className="text-red-700 font-semibold">{m.price} MAD</span>
+                                                {m.is_sold_out && <span className="text-xs text-destructive bg-destructive/10 px-1 rounded">(Épuisé)</span>}
+                                            </div>
                                         </div>
-                                    </div>
+                                    </MenuDetailsModal>
                                 ))}
                             </div>
                         </div>

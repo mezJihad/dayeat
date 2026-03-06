@@ -4,6 +4,7 @@ import "./globals.css";
 import { BottomNav } from "@/components/BottomNav";
 import { CookieConsent } from "@/components/CookieConsent";
 import { Toaster } from "sonner";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,12 +29,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased pb-16`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased pb-16 md:pb-0`}
       >
-        <main className="min-h-screen bg-background">
-          {children}
-        </main>
-        <BottomNav />
+        <Suspense fallback={null}>
+          <BottomNav />
+        </Suspense>
+
+        {/* Main content area, offset by sidebar width on desktop */}
+        <div className="md:ml-64 min-h-screen flex flex-col">
+          <main className="flex-1 bg-background relative">
+            {children}
+          </main>
+        </div>
         <Toaster
           position="top-center"
           toastOptions={{
