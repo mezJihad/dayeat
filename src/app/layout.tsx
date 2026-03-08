@@ -6,6 +6,8 @@ import { BottomNav } from "@/components/BottomNav";
 import { CookieConsent } from "@/components/CookieConsent";
 import { Toaster } from "sonner";
 import { Suspense } from "react";
+import { createClient } from '@/utils/supabase/server'
+import { getRestaurant } from '@/app/actions'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,24 +24,32 @@ export const metadata: Metadata = {
   description: "Menus du jour autour de vous",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const restaurant = user ? await getRestaurant() : null
+
+  // Safely serialize data for Next.js Client Components
+  const safeUser = user ? JSON.parse(JSON.stringify(user)) : null;
+  const safeRestaurant = restaurant ? JSON.parse(JSON.stringify(restaurant)) : null;
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased pb-16 md:pb-0`}
       >
         <Suspense fallback={null}>
-          <BottomNav />
+          <BottomNav initialUser={safeUser} />
         </Suspense>
 
         {/* Main content area, offset by sidebar width on desktop */}
         <div className="md:ml-64 min-h-screen flex flex-col">
           <Suspense fallback={null}>
-            <Header />
+            <Header initialUser={safeUser} initialRestaurant={safeRestaurant} />
           </Suspense>
           <main className="flex-1 flex flex-col bg-background relative">
             {children}

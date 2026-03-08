@@ -145,7 +145,7 @@ export async function addMenuItem(formData: FormData) {
     })
 
     if (error) {
-        console.error('Error adding item:', error)
+        console.error('Error adding item to database:', error)
         throw new Error('Erreur lors de l\'ajout du plat')
     }
 

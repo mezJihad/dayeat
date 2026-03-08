@@ -29,6 +29,7 @@ interface AddMenuFormProps {
 export function AddMenuForm({ menuToEdit, onSuccess }: AddMenuFormProps) {
     const isEditing = !!menuToEdit
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [mealPeriod, setMealPeriod] = useState(menuToEdit?.meal_period || "Dejeuner")
     const formRef = useRef<HTMLFormElement>(null)
 
     async function handleAddMenu(formData: FormData) {
@@ -41,7 +42,7 @@ export function AddMenuForm({ menuToEdit, onSuccess }: AddMenuFormProps) {
                 const options = {
                     maxSizeMB: 0.2, // ~200 KB
                     maxWidthOrHeight: 1280,
-                    useWebWorker: true
+                    useWebWorker: false // Disabled to prevent "network error" causing upload failures
                 }
 
                 try {
@@ -116,10 +117,11 @@ export function AddMenuForm({ menuToEdit, onSuccess }: AddMenuFormProps) {
                 <label htmlFor="meal_period" className="text-sm font-medium">
                     Service
                 </label>
+                <input type="hidden" name="meal_period" value={mealPeriod} />
                 <Select
-                    name="meal_period"
+                    value={mealPeriod}
+                    onValueChange={setMealPeriod}
                     required
-                    defaultValue={menuToEdit?.meal_period || "Dejeuner"}
                     disabled={isSubmitting}
                 >
                     <SelectTrigger className="w-full h-10 rounded-md border-input bg-background focus:ring-slate-900">

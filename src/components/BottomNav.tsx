@@ -1,23 +1,39 @@
 'use client'
 
 import Link from 'next/link'
-import { Home, ChefHat, Heart, Coffee, Utensils, IceCream, Moon, Leaf, ArrowDownAZ, List, Map, MapPin } from 'lucide-react'
+import { Home, ChefHat, Heart, Coffee, Utensils, IceCream, Moon, Leaf, ArrowDownAZ, List, Map, MapPin, Store } from 'lucide-react'
 import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-export function BottomNav() {
+export function BottomNav({ initialUser }: { initialUser?: any }) {
     const pathname = usePathname()
     const searchParams = useSearchParams()
     const router = useRouter()
     const [loadingLocation, setLoadingLocation] = useState(false)
+    const [isMounted, setIsMounted] = useState(false)
+    const [user, setUser] = useState<any>(initialUser || null)
+
+    useEffect(() => {
+        setIsMounted(true)
+    }, [])
+
+    useEffect(() => {
+        setUser(initialUser || null)
+    }, [initialUser])
+
+    if (!isMounted) {
+        return null // Avoid SSR hydration mismatches
+    }
 
     const isActive = (path: string) => pathname === path
-    const activeCategory = searchParams.get('category') || 'all'
-    const view = searchParams.get('view') || 'list'
-    const sort = searchParams.get('sort') || 'default'
+    const activeCategory = isMounted ? (searchParams.get('category') || 'all') : 'all'
+    const view = isMounted ? (searchParams.get('view') || 'list') : 'list'
+    const sort = isMounted ? (searchParams.get('sort') || 'default') : 'default'
+    const isFavorites = isMounted ? searchParams.get('favorites') === 'true' : false
+    const hasLocation = isMounted ? (searchParams.has('lat') && searchParams.has('long')) : false
 
     const updateParams = (newParams: Record<string, string | null>) => {
         const params = new URLSearchParams(searchParams.toString())
@@ -52,8 +68,6 @@ export function BottomNav() {
         updateParams({ lat: null, long: null, sort: sort === 'dist_asc' ? 'default' : sort })
     }
 
-    const hasLocation = searchParams.has('lat') && searchParams.has('long')
-
     // Categories
     const CATEGORIES = [
         { value: 'all', label: 'Tous', icon: Home },
@@ -78,7 +92,7 @@ export function BottomNav() {
                     href="/"
                     className={cn(
                         "flex flex-col md:flex-row items-center md:justify-start rounded-lg py-2 md:py-3 md:px-4 text-xs md:text-sm font-medium transition-colors hover:bg-muted",
-                        isActive('/') && !searchParams.get('favorites') ? "text-red-700 bg-red-50/50" : "text-muted-foreground",
+                        isActive('/') && !isFavorites ? "text-red-700 bg-red-50/50" : "text-muted-foreground",
                         "md:hidden" // Hidden on Desktop sidebar as it's in the Header
                     )}
                 >
@@ -89,7 +103,7 @@ export function BottomNav() {
                     href="/?favorites=true"
                     className={cn(
                         "flex flex-col md:flex-row items-center md:justify-start rounded-lg py-2 md:py-3 md:px-4 text-xs md:text-sm font-medium transition-colors hover:bg-muted",
-                        searchParams.get('favorites') === 'true' ? "text-red-700 bg-red-50/50" : "text-muted-foreground",
+                        isFavorites ? "text-red-700 bg-red-50/50" : "text-muted-foreground",
                         "md:hidden" // Hidden on Desktop sidebar
                     )}
                 >
@@ -104,8 +118,17 @@ export function BottomNav() {
                         "md:hidden" // Hidden on Desktop sidebar
                     )}
                 >
-                    <ChefHat className="mb-1 md:mb-0 md:mr-3 h-5 w-5" />
-                    <span>Espace restaurant</span>
+                    {user ? (
+                        <>
+                            <ChefHat className="mb-1 md:mb-0 md:mr-3 h-5 w-5" />
+                            <span>Espace pro</span>
+                        </>
+                    ) : (
+                        <>
+                            <Store className="mb-1 md:mb-0 md:mr-3 h-5 w-5" />
+                            <span>Restaurateur ?</span>
+                        </>
+                    )}
                 </Link>
             </div>
 
@@ -186,8 +209,8 @@ export function BottomNav() {
                     <div className="flex flex-col gap-1">
                         {CATEGORIES.map((cat) => {
                             const Icon = cat.icon
-                            const isSelected = activeCategory === cat.value && !searchParams.get('favorites')
-                            const currentParams = new URLSearchParams(searchParams.toString())
+                            const isSelected = activeCategory === cat.value && !isFavorites
+                            const currentParams = new URLSearchParams(isMounted ? searchParams.toString() : '')
                             if (cat.value === 'all') currentParams.delete('category')
                             else currentParams.set('category', cat.value)
                             currentParams.delete('favorites')
@@ -211,7 +234,7 @@ export function BottomNav() {
             </div>
 
             {/* Desktop Footer Info */}
-            <div className="hidden md:block mt-auto pt-4 text-[10px] text-muted-foreground text-center opacity-60">
+            <div suppressHydrationWarning className="hidden md:block mt-auto pt-4 text-[10px] text-muted-foreground text-center opacity-60">
                 &copy; {new Date().getFullYear()} DayEat
             </div>
         </div>
