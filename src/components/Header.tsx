@@ -9,11 +9,14 @@ import { createClient } from '@/utils/supabase/client'
 import Image from 'next/image'
 import { ProfileMenu } from './ProfileMenu'
 import { getRestaurant } from '@/app/actions'
+import { useLanguage } from '@/context/LanguageContext'
+import { LanguageSwitcher } from './LanguageSwitcher'
 
 export function Header({ initialUser, initialRestaurant }: { initialUser?: any, initialRestaurant?: any }) {
     const pathname = usePathname()
     const searchParams = useSearchParams()
     const router = useRouter()
+    const { t } = useLanguage()
 
     // Use server-provided data as initial state for instant rendering
     const [user, setUser] = useState<any>(initialUser || null)
@@ -54,15 +57,15 @@ export function Header({ initialUser, initialRestaurant }: { initialUser?: any, 
                     <span className="text-[11px] sm:text-xs font-medium leading-tight text-slate-800">
                         {user && pathname.startsWith('/admin') ? (
                             <span className="text-black dark:text-white">
-                                Les meilleurs <span className="text-red-700 font-bold">menus de jour</span>
+                                {t.header.slogan_line1} <span className="text-red-700 font-bold">{t.header.slogan_highlight}</span>
                                 <br />
-                                autour de vous
+                                {t.header.slogan_line2}
                             </span>
                         ) : (
                             <>
-                                Les meilleurs <span className="text-red-700 font-bold">menus de jour</span>
+                                {t.header.slogan_line1} <span className="text-red-700 font-bold">{t.header.slogan_highlight}</span>
                                 <br />
-                                autour de vous
+                                {t.header.slogan_line2}
                             </>
                         )}
                     </span>
@@ -78,7 +81,7 @@ export function Header({ initialUser, initialRestaurant }: { initialUser?: any, 
                         )}
                     >
                         <Home className="h-4 w-4" />
-                        Accueil
+                        {t.header.home}
                     </Link>
                     <Link
                         href="/?favorites=true"
@@ -88,7 +91,7 @@ export function Header({ initialUser, initialRestaurant }: { initialUser?: any, 
                         )}
                     >
                         <Heart className={cn("h-4 w-4", isFavorites && "fill-current")} />
-                        Mes Favoris
+                        {t.header.favorites}
                     </Link>
 
                     {/* Desktop Only: Restaurant Space Link in Nav */}
@@ -101,13 +104,14 @@ export function Header({ initialUser, initialRestaurant }: { initialUser?: any, 
                             )}
                         >
                             <ChefHat className="h-4 w-4" />
-                            Espace restaurant
+                            {t.header.restaurant_space}
                         </Link>
                     )}
                 </nav>
 
-                {/* Right Side: CTA or Profile */}
-                <div className="flex items-center gap-4">
+                {/* Right Side: Language Switcher + CTA or Profile */}
+                <div className="flex items-center gap-2">
+                    <LanguageSwitcher />
                     {user ? (
                         <div className="flex items-center gap-3">
                             {/* Profile Menu (Avatar) for Desktop */}
@@ -119,7 +123,7 @@ export function Header({ initialUser, initialRestaurant }: { initialUser?: any, 
                             className="hidden md:inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-4 rounded-full shadow-sm bg-slate-900 text-slate-50 hover:bg-slate-900/90"
                         >
                             <Store className="mr-2 h-4 w-4" />
-                            <span>Vous êtes restaurateur ?</span>
+                            <span>{t.header.restaurateur_cta}</span>
                         </Link>
                     )}
                 </div>
@@ -127,3 +131,5 @@ export function Header({ initialUser, initialRestaurant }: { initialUser?: any, 
         </header>
     )
 }
+
+

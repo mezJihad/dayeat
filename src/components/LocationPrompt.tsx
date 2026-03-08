@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { useLanguage } from '@/context/LanguageContext'
 
 export function LocationPrompt() {
     const searchParams = useSearchParams()
     const router = useRouter()
+    const { t } = useLanguage()
     const [isMounted, setIsMounted] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [hasLocationData, setHasLocationData] = useState(true) // Default to true to prevent initial pop-in
@@ -32,7 +34,7 @@ export function LocationPrompt() {
 
     const handleEnableLocation = () => {
         if (!navigator.geolocation) {
-            toast.error("La géolocalisation n'est pas supportée par votre navigateur.")
+            toast.error(t.locationPrompt.error_not_supported)
             return
         }
 
@@ -54,19 +56,17 @@ export function LocationPrompt() {
 
                 router.push(`/?${params.toString()}`)
                 setIsLoading(false)
-                toast.success("Position trouvée ! Les plats les plus proches sont affichés en premier.", {
-                    icon: '📍'
-                })
+                toast.success(t.locationPrompt.success, { icon: '📍' })
             },
             (err) => {
                 setIsLoading(false)
-                let errorMessage = "Erreur lors de la localisation."
+                let errorMessage = t.locationPrompt.error_generic
                 if (err.code === err.PERMISSION_DENIED) {
-                    errorMessage = "Vous avez refusé l'accès. Veuillez l'activer dans les paramètres de votre navigateur."
+                    errorMessage = t.locationPrompt.error_denied
                 } else if (err.code === err.POSITION_UNAVAILABLE) {
-                    errorMessage = "Information de localisation indisponible."
+                    errorMessage = t.locationPrompt.error_unavailable
                 } else if (err.code === err.TIMEOUT) {
-                    errorMessage = "La demande a pris trop de temps."
+                    errorMessage = t.locationPrompt.error_timeout
                 }
                 toast.error(errorMessage)
             },
@@ -92,9 +92,11 @@ export function LocationPrompt() {
                     </div>
 
                     <div className="flex-1 space-y-1.5">
-                        <h3 className="text-lg font-bold text-slate-900 tracking-tight">Que mangez-vous autour de vous ?</h3>
+                        <h3 className="text-lg font-bold text-slate-900 tracking-tight">{t.locationPrompt.title}</h3>
                         <p className="text-sm text-slate-700 leading-relaxed max-w-lg mx-auto sm:mx-0">
-                            Activez la localisation pour découvrir immédiatement les pépites culinaires chaudes et disponibles à <span className="font-semibold text-red-700">quelques mètres</span> de votre position.
+                            {t.locationPrompt.subtitle.replace(t.locationPrompt.highlight, '')}
+                            <span className="font-semibold text-red-700">{t.locationPrompt.highlight}</span>
+                            {t.locationPrompt.subtitle.split(t.locationPrompt.highlight)[1] ?? ''}
                         </p>
                     </div>
 
@@ -110,12 +112,12 @@ export function LocationPrompt() {
                             {isLoading ? (
                                 <>
                                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                    Recherche...
+                                    {t.locationPrompt.loading}
                                 </>
                             ) : (
                                 <>
                                     <Navigation className="w-4 h-4 mr-2 fill-current" />
-                                    Activer ma position
+                                    {t.locationPrompt.button}
                                 </>
                             )}
                         </Button>

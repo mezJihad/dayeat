@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 import { Suspense } from "react";
 import { createClient } from '@/utils/supabase/server'
 import { getRestaurant } from '@/app/actions'
+import { LanguageProvider } from '@/context/LanguageContext'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +22,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "DayEat",
-  description: "Menus du jour autour de vous",
+  description: "Menus de jour autour de vous",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default async function RootLayout({
@@ -42,19 +47,21 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased pb-16 md:pb-0`}
       >
-        <Suspense fallback={null}>
-          <BottomNav initialUser={safeUser} />
-        </Suspense>
-
-        {/* Main content area, offset by sidebar width on desktop */}
-        <div className="md:ml-64 min-h-screen flex flex-col">
+        <LanguageProvider>
           <Suspense fallback={null}>
-            <Header initialUser={safeUser} initialRestaurant={safeRestaurant} />
+            <BottomNav initialUser={safeUser} />
           </Suspense>
-          <main className="flex-1 flex flex-col bg-background relative">
-            {children}
-          </main>
-        </div>
+
+          {/* Main content area, offset by sidebar width on desktop */}
+          <div className="md:ml-64 min-h-screen flex flex-col">
+            <Suspense fallback={null}>
+              <Header initialUser={safeUser} initialRestaurant={safeRestaurant} />
+            </Suspense>
+            <main className="flex-1 flex flex-col bg-background relative">
+              {children}
+            </main>
+          </div>
+        </LanguageProvider>
         <Toaster
           position="top-center"
           toastOptions={{

@@ -1,0 +1,49 @@
+{
+    "header": {
+        "slogan_line1": "The best",
+        "slogan_highlight": "daily menus",
+        "slogan_line2": "near you",
+        "home": "Home",
+        "favorites": "My Favorites",
+        "restaurant_space": "Restaurant Space",
+        "restaurateur_cta": "Are you a restaurateur?"
+    },
+    "bottomNav": {
+        "home": "Home",
+        "favorites": "Favorites",
+        "restaurant_space": "My Space",
+        "restaurateur_cta": "Restaurateur?"
+    },
+    "home": {
+        "hero_title": "The best daily menus",
+        "hero_subtitle": "Discover the culinary gems available near you today.",
+        "no_menus": "No menu available at the moment.",
+        "no_menus_subtitle": "Come back later! 🕒"
+    },
+    "locationPrompt": {
+        "title": "What's around you to eat?",
+        "subtitle": "Enable location to instantly discover hot culinary gems available a few meters from your position.",
+        "highlight": "a few meters",
+        "button": "Enable my location",
+        "loading": "Searching...",
+        "success": "Location found! The nearest dishes are displayed first.",
+        "error_denied": "You denied access. Please enable it in your browser settings.",
+        "error_unavailable": "Location information unavailable.",
+        "error_timeout": "The request took too long.",
+        "error_generic": "Error while locating.",
+        "error_not_supported": "Geolocation is not supported by your browser."
+    },
+    "auth": {
+        "login": "Login",
+        "logout": "Logout",
+        "signup": "Sign Up",
+        "email": "Email",
+        "password": "Password",
+        "forgot_password": "Forgot password?"
+    },
+    "profileMenu": {
+        "my_restaurant": "My Restaurant",
+        "settings": "Settings",
+        "logout": "Logout"
+    }
+}

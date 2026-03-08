@@ -33,6 +33,7 @@ import { EditRestaurantForm } from './EditRestaurantForm'
 import { deleteRestaurantAccount } from '@/app/actions'
 import { createClient } from '@/utils/supabase/client'
 import { toast } from 'sonner'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface ProfileMenuProps {
     restaurant: any
@@ -40,6 +41,7 @@ interface ProfileMenuProps {
 
 export function ProfileMenu({ restaurant }: ProfileMenuProps) {
     const router = useRouter()
+    const { t } = useLanguage()
 
     // Dialog states
     const [showSettingsDialog, setShowSettingsDialog] = useState(false)
@@ -86,7 +88,7 @@ export function ProfileMenu({ restaurant }: ProfileMenuProps) {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal">
                         <div className="flex flex-col space-y-1">
-                            <p className="text-sm font-medium leading-none">Mon Profil</p>
+                            <p className="text-sm font-medium leading-none">{t.profileMenu.my_restaurant}</p>
                             <p className="text-xs leading-none text-muted-foreground truncate">
                                 {restaurant?.name || 'Restaurateur'}
                             </p>
@@ -100,7 +102,7 @@ export function ProfileMenu({ restaurant }: ProfileMenuProps) {
                                 className="cursor-pointer"
                             >
                                 <Store className="mr-2 h-4 w-4 text-emerald-600" />
-                                <span>Gérer mon restaurant</span>
+                                <span>{t.profileMenu.settings}</span>
                             </DropdownMenuItem>
                         </>
                     )}
@@ -130,7 +132,7 @@ export function ProfileMenu({ restaurant }: ProfileMenuProps) {
                         ) : (
                             <LogOut className="mr-2 h-4 w-4 text-slate-500" />
                         )}
-                        <span>Se déconnecter</span>
+                        <span>{t.profileMenu.logout}</span>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

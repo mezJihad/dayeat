@@ -7,11 +7,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
+import { useLanguage } from '@/context/LanguageContext'
 
 export function BottomNav({ initialUser }: { initialUser?: any }) {
     const pathname = usePathname()
     const searchParams = useSearchParams()
     const router = useRouter()
+    const { t } = useLanguage()
     const [loadingLocation, setLoadingLocation] = useState(false)
     const [isMounted, setIsMounted] = useState(false)
     const [user, setUser] = useState<any>(initialUser || null)
@@ -97,7 +99,7 @@ export function BottomNav({ initialUser }: { initialUser?: any }) {
                     )}
                 >
                     <Home className="mb-1 md:mb-0 md:mr-3 h-5 w-5" />
-                    <span>Accueil</span>
+                    <span>{t.bottomNav.home}</span>
                 </Link>
                 <Link
                     href="/?favorites=true"
@@ -108,7 +110,7 @@ export function BottomNav({ initialUser }: { initialUser?: any }) {
                     )}
                 >
                     <Heart className="mb-1 md:mb-0 md:mr-3 h-5 w-5" />
-                    <span>Favoris</span>
+                    <span>{t.bottomNav.favorites}</span>
                 </Link>
                 <Link
                     href="/admin"
@@ -121,12 +123,12 @@ export function BottomNav({ initialUser }: { initialUser?: any }) {
                     {user ? (
                         <>
                             <ChefHat className="mb-1 md:mb-0 md:mr-3 h-5 w-5" />
-                            <span>Espace pro</span>
+                            <span>{t.bottomNav.restaurant_space}</span>
                         </>
                     ) : (
                         <>
                             <Store className="mb-1 md:mb-0 md:mr-3 h-5 w-5" />
-                            <span>Restaurateur ?</span>
+                            <span>{t.bottomNav.restaurateur_cta}</span>
                         </>
                     )}
                 </Link>

@@ -1,0 +1,49 @@
+{
+    "header": {
+        "slogan_line1": "Les meilleurs",
+        "slogan_highlight": "menus de jour",
+        "slogan_line2": "autour de vous",
+        "home": "Accueil",
+        "favorites": "Mes Favoris",
+        "restaurant_space": "Espace restaurant",
+        "restaurateur_cta": "Vous êtes restaurateur ?"
+    },
+    "bottomNav": {
+        "home": "Accueil",
+        "favorites": "Favoris",
+        "restaurant_space": "Espace pro",
+        "restaurateur_cta": "Restaurateur ?"
+    },
+    "home": {
+        "hero_title": "Les meilleurs menus de jour",
+        "hero_subtitle": "Découvrez les pépites culinaires disponibles près de chez vous aujourd'hui.",
+        "no_menus": "Aucun menu disponible pour le moment.",
+        "no_menus_subtitle": "Revenez plus tard ! 🕒"
+    },
+    "locationPrompt": {
+        "title": "Que mangez-vous autour de vous ?",
+        "subtitle": "Activez la localisation pour découvrir immédiatement les pépites culinaires chaudes et disponibles à quelques mètres de votre position.",
+        "highlight": "quelques mètres",
+        "button": "Activer ma position",
+        "loading": "Recherche...",
+        "success": "Position trouvée ! Les plats les plus proches sont affichés en premier.",
+        "error_denied": "Vous avez refusé l'accès. Veuillez l'activer dans les paramètres de votre navigateur.",
+        "error_unavailable": "Information de localisation indisponible.",
+        "error_timeout": "La demande a pris trop de temps.",
+        "error_generic": "Erreur lors de la localisation.",
+        "error_not_supported": "La géolocalisation n'est pas supportée par votre navigateur."
+    },
+    "auth": {
+        "login": "Connexion",
+        "logout": "Déconnexion",
+        "signup": "Inscription",
+        "email": "Email",
+        "password": "Mot de passe",
+        "forgot_password": "Mot de passe oublié ?"
+    },
+    "profileMenu": {
+        "my_restaurant": "Mon Restaurant",
+        "settings": "Paramètres",
+        "logout": "Déconnexion"
+    }
+}

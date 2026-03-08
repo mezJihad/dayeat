@@ -5,7 +5,7 @@ import { Footer } from '@/components/Footer'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Store } from 'lucide-react'
-
+import { HomeHero, NoMenus } from '@/components/HomeHero'
 import { LocationPrompt } from '@/components/LocationPrompt'
 import { Suspense } from 'react'
 
@@ -37,25 +37,14 @@ export default async function Home({ searchParams }: HomeProps) {
     <div className="container mx-auto p-4 max-w-2xl md:max-w-6xl md:py-8 flex-1 flex flex-col">
 
 
-      {/* Desktop Hero Title */}
-      <div className="hidden md:flex flex-col items-center justify-center mb-8 text-center pt-2">
-        <h1 className="text-3xl lg:text-4xl font-bold text-[#27251F] dark:text-white tracking-tight">
-          Les meilleurs menus de jour
-        </h1>
-        <p className="mt-2 text-muted-foreground text-base max-w-lg">
-          Découvrez les pépites culinaires disponibles près de chez vous aujourd&apos;hui.
-        </p>
-      </div>
+      <HomeHero />
 
       <Suspense fallback={null}>
         <LocationPrompt />
       </Suspense>
 
       {menus.length === 0 ? (
-        <div className="flex-1 flex flex-col justify-center text-center py-20 text-muted-foreground">
-          <p>Aucun menu disponible pour le moment.</p>
-          <p className="text-sm mt-2">Revenez plus tard ! 🕒</p>
-        </div>
+        <NoMenus />
       ) : (
         <div className="w-full">
           <FeedToggle
